@@ -3,15 +3,15 @@
 
 struct Slope {
 	Slope(std::string s) {
-		queue = std::make_unique<std::deque<ShntYrd::Token>>(ShntYrd::ParseExpression(s));
+		queue = std::make_unique<std::deque<Token>>(ParseExpression(s));
 	}
 	double GetSlope(double x, double y) {
 		std::map<char, double> m;
 		m['x'] = x;
 		m['y'] = y;
-		return ShntYrd::EvaluateExpression(*queue, m);
+		return EvaluateExpression(*queue, m);
 	}
-	std::unique_ptr<std::deque<ShntYrd::Token>> queue;
+	std::unique_ptr<std::deque<Token>> queue;
 };
 
 double slope(double x, double y) {
@@ -631,11 +631,11 @@ public:
 		}
 	}
 	void PlotEXFunction(std::string f, int bounds[2]) {
-		std::deque<ShntYrd::Token> queue = ShntYrd::ParseExpression(f);
+		std::deque<Token> queue = ParseExpression(f);
 		int xDist = static_cast<int> ((bounds[1] - bounds[0]) * transSlope[0]);
 		for (int i = 0; i <= xDist; i++) {
 			int x = (i - transVector.x) / transSlope[0] + bounds[0];
-			int y = static_cast<int> (ShntYrd::EvaluateExpression(queue, std::map<char, double> { { 'x', x } }));
+			int y = static_cast<int> (EvaluateExpression(queue, std::map<char, double> { { 'x', x } }));
 			Point p = TranslatePoint(Point(x, y));
 			IncludePixel(Pixel(p.x, p.y, RGB));
 		}
@@ -647,10 +647,10 @@ public:
 				break;
 			}
 		}
-		std::deque<ShntYrd::Token> queue = ShntYrd::ParseExpression(f);
+		std::deque<Token> queue = ParseExpression(f);
 		for (Pixel pix : pixels) {
 			Pixel p = UntranslatePixel(pix);
-			if (abs(ShntYrd::EvaluateExpression(queue, std::map<char, double> { { 'x', p.x }, { 'y', p.y } })) <= 1) {
+			if (abs(EvaluateExpression(queue, std::map<char, double> { { 'x', p.x }, { 'y', p.y } })) <= 1) {
 				IncludePixel(pix);
 			}
 		}
