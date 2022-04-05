@@ -1,183 +1,5 @@
-﻿// CMakeProject.cpp : Defines the entry point for the application.
-//
-
-#include "CMakeProject.h"
-
-
-namespace ShntYrd
-{
-	struct Token {
-		enum struct Type {
-			Unknown,
-			Number,
-			Operator,
-			LeftParen,
-			RightParen,
-			Variable,
-		};
-
-		Token(Type t, const std::string& s, int prec = -1, bool ra = false) : type{ t }, str(s), precedence{ prec }, rightAssociative{ ra }	{}
-
-		const Type type;
-		const std::string str;
-		const int precedence;
-		const bool rightAssociative;
-	};
-
-	std::deque<Token> ParseExpression(std::string& string) {
-		std::deque<Token> tokens;
-
-		for (const auto* c = string.c_str(); *c; c++) {
-			if (isblank(*c)) {
-				// pass
-			}
-			else if (isdigit(*c)) {
-				const auto* b = c;
-				auto* e = c;
-
-				while (isdigit(*e)) {
-					e++;
-				}
-				const auto s = std::string(b, e);
-				tokens.push_back(Token{ Token::Type::Number, s });
-				c += s.size();
-			}
-			else if (isalpha(*c)) {
-				tokens.push_back(Token{ Token::Type::Variable, std::string(1, *c) });
-			}
-			else {
-				Token::Type t = Token::Type::Unknown;
-				int pr = -1;
-				bool ra = false;
-				switch (*c) {
-				default:                                    break;
-				case '(':   t = Token::Type::LeftParen;     break;
-				case ')':   t = Token::Type::RightParen;    break;
-				case '_':   t = Token::Type::Operator;      pr = 5; ra = true; break;
-				case '^':   t = Token::Type::Operator;      pr = 4; ra = true; break;
-				case '*':   t = Token::Type::Operator;      pr = 3; break;
-				case '/':   t = Token::Type::Operator;      pr = 3; break;
-				case '%':   t = Token::Type::Operator;      pr = 3; break;
-				case '+':   t = Token::Type::Operator;      pr = 2; break;
-				case '-':   t = Token::Type::Operator;      pr = 2; break;
-				}
-				const auto s = std::string(1, *c);
-				tokens.push_back(Token{ t, s, pr, ra });
-			}
-		}
-
-		// ShuntingYard
-
-		std::deque<Token> queue;
-		std::vector<Token> stack;
-
-		for (Token token : tokens) {
-			switch (token.type) {
-			case Token::Type::Number:
-				queue.push_back(token);
-				break;
-
-			case Token::Type::Operator:
-			{
-				const auto o1 = token;
-				while (!stack.empty()) {
-					const auto o2 = stack.back();
-					if ((!o1.rightAssociative && o1.precedence <= o2.precedence) || (o1.rightAssociative && o1.precedence < o2.precedence)) {
-						stack.pop_back();
-						queue.push_back(o2);
-
-						continue;
-					}
-					break;
-				}
-				stack.push_back(o1);
-				break;
-			}
-			case Token::Type::LeftParen:
-				stack.push_back(token);
-				break;
-
-			case Token::Type::RightParen:
-			{
-				bool match = false;
-				while (!stack.empty() && stack.back().type != Token::Type::LeftParen) {
-					queue.push_back(stack.back());
-					stack.pop_back();
-					match = true;
-				}
-				stack.pop_back();
-
-				if (!match && stack.empty()) {
-					printf("RightParen error (%s)\n", token.str.c_str());
-					return {};
-				}
-				break;
-			}
-			default:
-				printf("error (%s)\n", token.str.c_str());
-				return {};
-			}
-		}
-		while (!stack.empty()) {
-			if (stack.back().type == Token::Type::LeftParen) {
-				printf("Mismatched parentheses error\n");
-				return {};
-			}
-
-			queue.push_back(std::move(stack.back()));
-			stack.pop_back();
-		}
-		return queue;
-	}
-
-	double EvaluateExpression(std::deque<Token> queue, std::map<char, double> vars) {
-		std::vector<int> stack;
-		while (!queue.empty()) {
-			const auto token = queue.front();
-			queue.pop_front();
-			switch (token.type) {
-			case Token::Type::Number:
-				stack.push_back(std::stoi(token.str));
-				break;
-			case Token::Type::Variable:
-				stack.push_back(vars[token.str[0]]);
-				break;
-			case Token::Type::Operator:
-			{
-				const auto r = stack.back();
-				stack.pop_back();
-				if (token.str[0] == '_') {
-					stack.push_back(-r);
-					break;
-				}
-				const auto l = stack.back();
-				stack.pop_back();
-
-				switch (token.str[0]) {
-				default:
-					printf("Operator error [%s]\n", token.str.c_str());
-					exit(0);
-					break;
-				case '^':	stack.push_back(static_cast<int>(pow(l, r)));	break;
-				case '*':	stack.push_back(l * r);							break;
-				case '/':	stack.push_back(l / r);							break;
-				case '+':	stack.push_back(l + r);							break;
-				case '-':	stack.push_back(l - r);							break;
-				case '%':	stack.push_back(l % r);							break;
-				}
-			}
-			break;
-
-			default:
-				printf("Token error\n");
-				exit(0);
-			}
-		}
-		return stack.back();
-	}
-
-}
-
+﻿#include "CMakeProject.h"
+#include "ShuntingYard.h"
 
 struct Slope {
 	Slope(std::string s) {
@@ -598,6 +420,7 @@ class container{
 };
 */
 
+class PersonalImage;
 
 namespace utl
 {
@@ -683,46 +506,37 @@ namespace utl
 		return out;
 	}
 
+	
 	struct Hash {
-		std::size_t operator () (const Point& p) {
+		std::size_t operator () (const Point& p) const {
 			std::size_t x = std::hash<double>{}(p.x);
 			std::size_t y = std::hash<double>{}(p.y);
 			return x ^ (y << 1);
 		}
-		std::size_t operator() (const Segment& s) {
+		std::size_t operator() (const Segment& s) const {
 			std::size_t p1 = Hash{}(s.p1);
 			std::size_t p2 = Hash{}(s.p2);
 			return p1 ^ (p2 << 1);
 		}
-		std::size_t operator() (const Particle& p) {
+		std::size_t operator() (const Particle& p) const {
 			std::size_t origin = Hash{}(p.p);
 			std::size_t theta = std::hash<double>{}(p.theta);
 			return origin ^ (theta << 1);
 		}
-		std::size_t operator() (const Pixel& p) {
+		std::size_t operator() (const Pixel& p) const {
 			std::size_t point = Hash{}(Point(p.x, p.y));
 			std::size_t RGB = 0;
-			for (int i : p.RGB) {
-				RGB ^= (std::hash<int>{}(i) << i);
-			}
+			for (int i : p.RGB) RGB ^= (std::hash<int>{}(i) << i);
 			return point ^ (RGB << 1);
 		}
-		std::size_t operator() (PersonalImage image) {
+		std::size_t operator() (PersonalImage image) const;
+		std::size_t operator() (Mtx::Matrix m) const {
 			std::size_t out = 0;
-			for (Pixel p : image.GetImage()) {
-				out ^= (Hash{}(p) << 1);
-			}
-		}
-		std::size_t operator() (Mtx::Matrix m) {
-			std::size_t out = 0;
-			for (Point p : m.getMatrix()) {
-				out ^= Hash{}(p);
-			}
+			for (Point p : m.getMatrix()) out ^= Hash{}(p);
+			return out;
 		}
 	};
-
 }
-
 
 // bool capture inside [] to sue within function
 // utl::Sort(list, [](l, r) {return false;});		* [&] captures everything by reference and [=] captures an unreferenced copy
@@ -919,7 +733,7 @@ private:
 		for (int i = 0; i < s.length(); i++) {
 			out += s[i] * pow(100, i);
 		}
-
+		return out;
 	}
 	Point TranslatePoint(Point p) {
 		p.Translate(transSlope, transVector);
@@ -961,6 +775,12 @@ private:
 	double transSlope[2];
 };
 
+std::size_t utl::Hash::operator() (PersonalImage image) const {
+	std::size_t out = 0;
+	for (Pixel p : image.GetImage()) out ^= (Hash{}(p) << 1);
+	return out;
+}
+
 namespace Huff
 {
 	template <typename I>
@@ -976,7 +796,7 @@ namespace Huff
 	template <typename I>
 	class Item : public Element<I> {
 	public:
-		Item() : i(I), freq(0) {}
+		Item() : i(I()), freq(0) {}
 		Item(I in, int f) : i(in), freq(f) {}
 
 		I GetItem(std::deque<bool>& nothing) override {
@@ -1129,7 +949,7 @@ namespace Huff
 
 		std::vector<I> DecodeBoolVector(std::deque<bool> index) {
 			std::vector<I> out;
-			while (!index.empty()) out.push_back(_Tree.GetItem(index);
+			while (!index.empty()) out.push_back(_Tree.GetItem(index));
 			return out;
 		}
 
@@ -1164,11 +984,6 @@ namespace Huff
 
 int main()
 {
-	return 0;
-}
-
-
-int main()
-{
+	
 	return 0;
 }
