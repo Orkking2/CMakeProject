@@ -77,22 +77,24 @@ struct Node : public Element<I> {
 template <typename I, class Hasher = std::hash<I>>
 class Tree {
 	Tree(std::vector<I> orderedKey, std::unordered_map<I, int, Hasher> freq) {
+		using Item = Item<I>;
+		using Node = Node<I>;
 
 		// Initializing Char deque using Ordered key & paired frequency | basically just converting data types
-		std::deque<Item<I>> initCharList;
-		for (I i : orderedKey) initCharList.push_back(Item<I>(i, freq[i]));
+		std::deque<Item> initCharList;
+		for (I i : orderedKey) initCharList.push_back(Item(i, freq[i]));
 
 
 		// Initializing tree -- initial construction always includes a node with the two least frequent items
-		Item<I> cashedChar = initCharList.front();
+		Item cashedChar = initCharList.front();
 		initCharList.pop_front();
-		std::vector<Node<I>> nodes = { Node<I>(std::make_unique<Item<I>>(cashedChar), std::make_unique<Item<I>>(initCharList.front())) };
+		std::vector<Node> nodes = { Node(std::make_unique<Item>(cashedChar), std::make_unique<Item>(initCharList.front())) };
 		itemBoolIndex_[initCharList.front().GetItemList()[0]].push_back(true);
 		itemBoolIndex_[cashedChar.GetItemList()[0]].push_back(false);
 		initCharList.pop_front();
 
 		// Initializing cashes
-		Node<I> cashedNode;
+		Node cashedNode;
 		cashedChar.isSetFlag = false;
 		cashedChar.isSetFlag = false;
 
@@ -119,7 +121,7 @@ class Tree {
 			}
 
 			{	// Combiner logic -- artificial scope so tempNode and tempIndex always get re-initialized
-				Node<I> tempNode = nodes[0];
+				Node tempNode = nodes[0];
 				int tempIndex = 0;
 				for (int i = 1; i < nodes.size(); i++) {
 					if (nodes[i].GetFreq() < tempNode.GetFreq()) {
@@ -129,20 +131,20 @@ class Tree {
 				}
 				if (tempNode.GetFreq() < cashedChar.GetFreq() || initCharList.empty()) {
 					nodes.erase(nodes.begin() + tempIndex);
-					nodes.emplace_back(Node<I>(std::make_unique<Node<I>>(tempNode), std::make_unique<Node<I>>(cashedNode)));
+					nodes.emplace_back(Node(std::make_unique<Node>(tempNode), std::make_unique<Node>(cashedNode)));
 					cashedNode.isSetFlag = false;
 					for (I i : tempNode.GetItemList()) itemBoolIndex_[i].push_back(false);
 					for (I i : cashedNode.GetItemList()) itemBoolIndex_[i].push_back(true);
 				}
 				else if (cashedNode.GetFreq() < initCharList.front().GetFreq()) {
-					nodes.emplace_back(Node<I>(std::make_unique<Node<I>>(cashedNode), std::make_unique<Item<I>>(cashedChar)));
+					nodes.emplace_back(Node(std::make_unique<Node>(cashedNode), std::make_unique<Item>(cashedChar)));
 					for (I i : cashedNode.GetItemList()) itemBoolIndex_[i].push_back(false);
 					itemBoolIndex_[cashedChar.GetItemList()[0]].push_back(true);
 					cashedNode.isSetFlag = false;
 					cashedChar.isSetFlag = false;
 				}
 				else {
-					tempNode = Node<I>(std::make_unique<Item<I>>(cashedChar), std::make_unique<Item<I>>(initCharList.front()));
+					tempNode = Node(std::make_unique<Item>(cashedChar), std::make_unique<Item>(initCharList.front()));
 					itemBoolIndex_[cashedChar.GetItemList()[0]].push_back(false);
 					itemBoolIndex_[initCharList.front().GetItemList()[0]].push_back(true);
 					initCharList.pop_front();
@@ -178,5 +180,5 @@ class Tree {
 	std::unordered_map<I, std::deque<bool>, Hasher> itemBoolIndex_;
 
 	// Tree
-	Node<I> tree_;
+	Node tree_;
 };
