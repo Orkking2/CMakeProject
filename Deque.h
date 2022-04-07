@@ -29,12 +29,12 @@ public:
 	}
 	Item* front_ptr() {
 		return first_item_;
+	}
+	Item* back_ptr() {
+		return last_item_;
 	}	
 //	Item* new_plus_assert(T& i, Item* next, Item* prev)
 
-	Item* back_ptr() {
-		return last_item_;
-	}
 	void emplace_front(T& i) {
 		if (first_item_ == nullptr) {
 			first_item_ = new_plus_assert(i, last_item_, nullptr);
