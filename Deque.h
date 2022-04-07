@@ -33,7 +33,7 @@ public:
 	Item* back_ptr() {
 		return last_item_;
 	}	
-//	Item* new_plus_assert(T& i, Item* next, Item* prev)
+//	Item* new_plus_assert(T& i, Item* next, Item* prev) for reference
 
 	void emplace_front(T& i) {
 		if (first_item_ == nullptr) {
