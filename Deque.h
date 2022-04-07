@@ -13,10 +13,7 @@ class Deque {
 public:
 	using Item = Item<T>;
 	Deque() : first_item_(0), last_item_(first_item_) {}
-	Deque(T& i) {
-		first_item_ = new_plus_assert(i, 0);
-		last_item_ = first_item_
-	}
+	Deque(T& i) : first_item_(new_plus_assert(i, 0)), last_item_(first_item_) {}
 	Deque(Deque& d) : first_item_(d.front_ptr()), last_item_(d.back_ptr()) {}
 	~Deque() {
 		while (first_item_) {
