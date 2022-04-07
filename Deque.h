@@ -29,6 +29,10 @@ public:
 		return last_item_;
 	}
 	void emplace_front(T& i) {
+		if (first_item_ == nullptr) {
+			first_item_ = new_plus_assert(i, nullptr, nullptr);
+			break;
+		}
 		first_item_->prev_ = new_plus_assert(i, first_item_, nullptr);
 		first_item_ = first_item_->prev_;
 	}
@@ -36,22 +40,33 @@ public:
 		emplace_back(i);
 	}
 	void emplace_back(T& i) {
+		if (last_item_ == nullptr) {
+			last_item_ = new_plus_assert(i, nullptr, nullptr);
+		}
 		last_item_->next_ = new_plus_assert(i, nullptr, last_item_);
 		last_item_ = last_item_->next_;
 	}
 	inline void push_front(T i) {
 		emplace_back(i);
 	}
-	T front() return first_item_->val_;
+	T front() {
+		assert(first_item_);
+		return first_item_->val_;
+	}
 	T pop_front() {
+		assert(first_item_);
 		Item* cashe = first_item_;
 		first_item_ = first_item_->next_;
 		T out = cashe->val_;
 		delete cashe;
 		return out;
 	}
-	T back() return last_item_->val_;
+	T back() {
+		assert(last_item_);
+		return last_item_->val_;
+	}
 	T pop_back() {
+		assert(last_item_);
 		Item* cashe = last_item_;
 		last_item_ = last_item_->prev_;
 		T out = cashe->val_;
