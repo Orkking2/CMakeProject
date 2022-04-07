@@ -30,8 +30,11 @@ public:
 	}
 	void emplace_front(T& i) {
 		if (first_item_ == nullptr) {
-			first_item_ = new_plus_assert(i, nullptr, nullptr);
+			first_item_ = new_plus_assert(i, last_item_, nullptr);
 			break;
+		}
+		else if (first_item_->next_ == nullptr) {
+			first_item_->next_ = last_item_;
 		}
 		first_item_->prev_ = new_plus_assert(i, first_item_, nullptr);
 		first_item_ = first_item_->prev_;
@@ -41,7 +44,10 @@ public:
 	}
 	void emplace_back(T& i) {
 		if (last_item_ == nullptr) {
-			last_item_ = new_plus_assert(i, nullptr, nullptr);
+			last_item_ = new_plus_assert(i, nullptr, first_item_);
+		}
+		else if (last_item_->prev_ == nullptr) {
+			last_item_->prev_ = first_item_;
 		}
 		last_item_->next_ = new_plus_assert(i, nullptr, last_item_);
 		last_item_ = last_item_->next_;
