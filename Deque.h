@@ -16,19 +16,15 @@ public:
 	Deque(T& i) : first_item_(new_plus_assert(i, nullptr, nullptr)), last_item_(nullptr) {}
 	Deque(Deque& d) : first_item_(d.front_ptr()), last_item_(d.back_ptr()) {}
 	~Deque() {
-		if (first_item_ != nullptr) {
-			while (first_item_ != nullptr) {
-				Item* cashe = first_item_;
-				first_item_ = first_item_->next_;
-				delete cashe;
-			}
+		while (first_item_ != nullptr) {
+			Item* cashe = first_item_;
+			first_item_ = first_item_->next_;
+			delete cashe;
 		}
-		else {
-			while (last_item_ != nullptr) {
-				Item* cahse = last_item_;
-				last_item_ = last_item_->next_;
-				delete cashe;
-			}
+		while (last_item_ != nullptr) {
+			Item* cahse = last_item_;
+			last_item_ = last_item_->next_;
+			delete cashe;
 		}
 	}
 	Item* front_ptr() {
