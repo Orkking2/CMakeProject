@@ -42,9 +42,7 @@ public:
 	inline void push_front(T i) {
 		emplace_back(i);
 	}
-	T front() {
-		return first_item_->val_;
-	}
+	T front() return first_item_->val_;
 	T pop_front() {
 		Item* cashe = first_item_;
 		first_item_ = first_item_->next_;
@@ -52,9 +50,7 @@ public:
 		delete cashe;
 		return out;
 	}
-	T back() {
-		return last_item_->val_;
-	}
+	T back() return last_item_->val_;
 	T pop_back() {
 		Item* cashe = last_item_;
 		last_item_ = last_item_->prev_;
