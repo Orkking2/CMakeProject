@@ -24,7 +24,9 @@ public:
 	}
 	Item* front_ptr() {
 		return first_item_;
-	}
+	}	
+//	Item* new_plus_assert(T& i, Item* next, Item* prev)
+
 	Item* back_ptr() {
 		return last_item_;
 	}
