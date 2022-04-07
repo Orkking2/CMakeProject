@@ -16,7 +16,7 @@ public:
 	Deque(T& i) : first_item_(new_plus_assert(i, nullptr, nullptr)), last_item_(first_item_) {}
 	Deque(Deque& d) : first_item_(d.front_ptr()), last_item_(d.back_ptr()) {}
 	~Deque() {
-		while (first_item_) {
+		while (first_item_ != nullptr) {
 			Item* cashe = first_item_;
 			first_item_ = first_item_->next_;
 			delete cashe;
@@ -33,10 +33,14 @@ public:
 	void emplace_front(T& i) {
 		if (first_item_ == nullptr) {
 			first_item_ = new_plus_assert(i, last_item_, nullptr);
+			Item* cashe = last_item_;
+			while (cashe != nullptr) {
+				cashe = cashe->prev_;
+			}
+			if (cashe != nullptr) {
+				cashe->prev_ = first_item_;
+			}
 			break;
-		}
-		else if (first_item_->next_ == nullptr) {
-			first_item_->next_ = last_item_;
 		}
 		first_item_->prev_ = new_plus_assert(i, first_item_, nullptr);
 		first_item_ = first_item_->prev_;
@@ -47,9 +51,14 @@ public:
 	void emplace_back(T& i) {
 		if (last_item_ == nullptr) {
 			last_item_ = new_plus_assert(i, nullptr, first_item_);
-		}
-		else if (last_item_->prev_ == nullptr) {
-			last_item_->prev_ = first_item_;
+			Item* cashe = first_item_;
+			while (cashe != nullptr) {
+				cashe = cashe->next_;
+			}
+			if (cashe != nullptr) {
+				cashe->next_ = last_item_;
+			}
+			break;
 		}
 		last_item_->next_ = new_plus_assert(i, nullptr, last_item_);
 		last_item_ = last_item_->next_;
