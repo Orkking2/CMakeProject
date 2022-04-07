@@ -12,8 +12,8 @@ template <typename T>
 class Deque {
 public:
 	using Item = Item<T>;
-	Deque() : first_item_(0), last_item_(first_item_) {}
-	Deque(T& i) : first_item_(new_plus_assert(i, 0)), last_item_(first_item_) {}
+	Deque() : first_item_(nullptr), last_item_(first_item_) {}
+	Deque(T& i) : first_item_(new_plus_assert(i, nullptr, nullptr)), last_item_(first_item_) {}
 	Deque(Deque& d) : first_item_(d.front_ptr()), last_item_(d.back_ptr()) {}
 	~Deque() {
 		while (first_item_) {
@@ -29,14 +29,14 @@ public:
 		return last_item_;
 	}
 	void emplace_front(T& i) {
-		first_item_->prev_ = new_plus_assert(i, first_item_, 0);
+		first_item_->prev_ = new_plus_assert(i, first_item_, nullptr);
 		first_item_ = first_item_->prev_;
 	}
 	inline void push_back(T i) {
 		emplace_back(i);
 	}
 	void emplace_back(T& i) {
-		last_item_->next_ = new_plus_assert(i, 0, last_item_);
+		last_item_->next_ = new_plus_assert(i, nullptr, last_item_);
 		last_item_ = last_item_->next_;
 	}
 	inline void push_front(T i) {
