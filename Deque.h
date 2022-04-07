@@ -32,9 +32,15 @@ public:
 		first_item_->prev_ = new_plus_assert(i, first_item_, 0);
 		first_item_ = first_item_->prev_;
 	}
+	inline void push_back(T i) {
+		emplace_back(i);
+	}
 	void emplace_back(T& i) {
 		last_item_->next_ = new_plus_assert(i, 0, last_item_);
 		last_item_ = last_item_->next_;
+	}
+	inline void push_front(T i) {
+		emplace_back(i);
 	}
 	T front() {
 		return first_item_->val_;
