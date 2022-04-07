@@ -33,6 +33,7 @@ public:
 	void emplace_front(T& i) {
 		if (first_item_ == nullptr) {
 			first_item_ = new_plus_assert(i, last_item_, nullptr);
+			// Link checking
 			Item* cashe = last_item_;
 			while (cashe != nullptr) {
 				cashe = cashe->prev_;
@@ -51,6 +52,7 @@ public:
 	void emplace_back(T& i) {
 		if (last_item_ == nullptr) {
 			last_item_ = new_plus_assert(i, nullptr, first_item_);
+			// Link checking
 			Item* cashe = first_item_;
 			while (cashe != nullptr) {
 				cashe = cashe->next_;
