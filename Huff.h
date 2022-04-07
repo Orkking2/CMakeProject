@@ -22,7 +22,7 @@ public:
 	Item() : i(I()), freq(0) {}
 	Item(I in, int f) : i(in), freq(f) {}
 
-	I GetItem(std::deque<bool>& nothing) override {
+	I GetItem(std::deque<bool> &nothing) override {
 		return i;
 	}
 	std::vector<I> GetItemList() override {
@@ -51,11 +51,11 @@ struct Node : public Element<I> {
 		out.push_back(_left->GetItemList());
 		return out;
 	}
-	I GetItem(std::deque<bool>& index) override {
+	I GetItem(std::deque<bool> &index) override {
 		bool casheBool = index.front();
 		index.pop_front();
 		if (casheBool) return _right->GetChar(index);
-		else		   return _left->GetChar(index);
+		else		   return _left ->GetChar(index);
 	}
 	int GetFreq() override {
 		int i = 0;
