@@ -2,7 +2,7 @@
 
 template <typename T>
 struct Item {
-	Item(T& val, Item* next = 0, Item* prev = 0) : val_(val), next_(next), prev_(prev) {}
+	Item(T& val, Item* next = nullptr, Item* prev = nullptr) : val_(val), next_(next), prev_(prev) {}
 	T val_;
 	Item* next_;
 	Item* prev_;
@@ -12,7 +12,7 @@ template <typename T>
 class Deque {
 public:
 	using Item = Item<T>;
-	Deque() : first_item_(nullptr), last_item_(first_item_) {}
+	Deque() : first_item_(nullptr), last_item_(nullptr) {}
 	Deque(T& i) : first_item_(new_plus_assert(i, nullptr, nullptr)), last_item_(first_item_) {}
 	Deque(Deque& d) : first_item_(d.front_ptr()), last_item_(d.back_ptr()) {}
 	~Deque() {
