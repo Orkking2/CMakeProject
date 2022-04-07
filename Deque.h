@@ -22,7 +22,7 @@ public:
 			delete cashe;
 		}
 		while (last_item_ != nullptr) {
-			Item* cahse = last_item_;
+			Item* cashe = last_item_;
 			last_item_ = last_item_->next_;
 			delete cashe;
 		}
