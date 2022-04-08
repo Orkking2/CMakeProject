@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Image.h"
+//#include "Image.h"
 #include "Geometry.h"
 #include <map>
 #include <string>
@@ -91,7 +91,7 @@ std::unordered_map<I, int, Hasher> GenFreq(std::vector<I> in) {
 	return out;
 }
 
-
+/*
 struct Hash {
 	std::size_t operator () (const Point& p) const {
 		std::size_t x = std::hash<double>{}(p.x);
@@ -108,7 +108,7 @@ struct Hash {
 		std::size_t theta = std::hash<double>{}(p.theta);
 		return origin ^ (theta << 1);
 	}
-	std::size_t operator() (const Pixel& p) const {
+	std::size_t operator() (Pixel p) const {
 		std::size_t point = Hash{}(Point(p.x, p.y));
 		std::size_t RGB = 0;
 		for (int i : p.RGB) RGB ^= (std::hash<int>{}(i) << i);
@@ -124,4 +124,4 @@ struct Hash {
 		for (Pixel p : image.GetImage()) out ^= (Hash{}(p) << 1);
 		return out;
 	}
-};
+};*/

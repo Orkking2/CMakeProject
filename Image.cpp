@@ -1,5 +1,20 @@
 #include "Image.h"
 
+/*
+Hex hexUtility;
+std::vector<Point> bounds;
+std::vector<int> size, RGB, axesRGB, backRGB;
+std::vector<Pixel> pixels;
+Point transVector;
+double transSlope[2];
+*/
+PersonalImage::PersonalImage(std::vector<Point> xyBounds, std::vector<int> sizeIn, std::vector<int> backgroundRGB) : size(sizeIn), bounds(xyBounds) {
+
+	for (Point p : Matrix(xyBounds[0], xyBounds[1], size).getMatrix()) {
+
+	}
+}
+
 void PersonalImage::SetNewRGBStr(std::string s, std::vector<int> i) {
 	if (i.size() == 3) {
 		bool legalityFlag = true;

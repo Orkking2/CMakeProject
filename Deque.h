@@ -32,10 +32,9 @@ public:
 	}
 	Item* back_ptr() {
 		return last_item_;
-	}	
-//	Item* new_plus_assert(T& i, Item* next, Item* prev) for reference
+	}
 
-	void emplace_front(T& i) {
+	void emplace_front(Type& i) {
 		if (first_item_ == nullptr) {
 			first_item_ = new_plus_assert(i, last_item_, nullptr);
 			link_l();
@@ -44,10 +43,10 @@ public:
 		first_item_->prev_ = new_plus_assert(i, first_item_, nullptr);
 		first_item_ = first_item_->prev_;
 	}
-	inline void push_back(T i) {
+	inline void push_back(Type i) {
 		emplace_back(i);
 	}
-	void emplace_back(T& i) {
+	void emplace_back(Type& i) {
 		if (last_item_ == nullptr) {
 			last_item_ = new_plus_assert(i, nullptr, first_item_);
 			link_f();
@@ -56,7 +55,7 @@ public:
 		last_item_->next_ = new_plus_assert(i, nullptr, last_item_);
 		last_item_ = last_item_->next_;
 	}
-	inline void push_front(T i) {
+	inline void push_front(Type i) {
 		emplace_back(i);
 	}
 	Type front() {
@@ -84,7 +83,7 @@ public:
 		return out;
 	}
 private:
-	Item* new_plus_assert(T& i, Item* next, Item* prev) {
+	Item* new_plus_assert(Type& i, Item* next, Item* prev) {
 		Item* ptr = new Item(i, next, prev);
 		assert(ptr);
 		return ptr;
@@ -104,22 +103,18 @@ private:
 	void link_f() {
 		assert(last_item_ != nullptr);
 		Item* cashe = last_item_;
-		while (cashe != nullptr) {
+		while(cashe->prev_ != nullptr) {
 			cashe = cashe->prev_;
 		}
-		if (cashe != nullptr) {
-			cashe->prev_ = first_item_;
-		}
+		cashe->prev_ = first_item_;
 	}
 	void link_l() {
 		assert(first_item_ != nullptr);
 		Item* cashe = first_item_;
-		while (cashe != nullptr) {
+		while (cashe->next_ != nullptr) {
 			cashe = cashe->next_;
 		}
-		if (cashe != nullptr) {
-			cashe->next_ = last_item_;
-		}
+		cashe->next_ = last_item_;
 	}
 	Item* first_item_;
 	Item*  last_item_;

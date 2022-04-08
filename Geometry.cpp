@@ -1,12 +1,6 @@
 #include "Geometry.h"
 
-inline double slope(double x, double y) {
-	return (pow(x, 2) + pow(y, 2) - 2 * x * y - 3);  // x^2 + y^2 - 2xy - 3
-}
 
-inline double InvSigmoid(double x, double a) {
-	return -log(a / (x + 0.5 * a) - 1);
-}
 
 void Point::Scale(double scaler) {
 	double r = sqrt(pow(x, 2) + pow(y, 2));

@@ -87,6 +87,10 @@ struct Segment {
 	}
 };
 
+inline double InvSigmoid(double x, double a) {
+	return -log(a / (x + 0.5 * a) - 1);
+}
+
 struct Particle {
 	Particle(Point origin = Point(), double thetaIn = 0) {
 		p = origin;
@@ -169,6 +173,6 @@ std::vector<Point> Approximate(std::vector<double> in, bool isTesting);
 
 std::vector<double> StartSelect();
 
-inline double slope(double x, double y);
-
-inline double InvSigmoid(double x, double a);
+inline double slope(double x, double y) {
+	return (pow(x, 2) + pow(y, 2) - 2 * x * y - 3);  // x^2 + y^2 - 2xy - 3
+}
