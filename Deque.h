@@ -37,7 +37,11 @@ public:
 	void emplace_front(Type& i) {
 		if (first_item_ == nullptr) {
 			first_item_ = new_plus_assert(i, last_item_, nullptr);
-			link_l();
+			if (last_item_ != nullptr) {
+				Item* cashe = last_item_;
+				while (cashe->prev_ != nullptr) cashe = cashe->prev_;
+				cashe->prev_ = first_item_;
+			}
 			break;
 		}
 		first_item_->prev_ = new_plus_assert(i, first_item_, nullptr);
@@ -49,7 +53,11 @@ public:
 	void emplace_back(Type& i) {
 		if (last_item_ == nullptr) {
 			last_item_ = new_plus_assert(i, nullptr, first_item_);
-			link_f();
+			if (first_item_ != nullptr) {
+				Item* cashe = first_item_;
+				while (cashe->next_ != nullptr) cashe = cashe->next_;
+				cashe->next_ = last_item_;
+			}
 			break;
 		}
 		last_item_->next_ = new_plus_assert(i, nullptr, last_item_);
@@ -66,7 +74,7 @@ public:
 		assert(pop_possible());
 		Item* cashe = first_item_;
 		first_item_ = first_item_->next_;
-		T out = cashe->val_;
+		Type out = cashe->val_;
 		delete cashe;
 		return out;
 	}
@@ -78,7 +86,7 @@ public:
 		assert(pop_possible());
 		Item* cashe = last_item_;
 		last_item_ = last_item_->prev_;
-		T out = cashe->val_;
+		Type out = cashe->val_;
 		delete cashe;
 		return out;
 	}
@@ -93,28 +101,16 @@ private:
 			return false;
 		}
 		else if (first_item_ == nullptr) {
-			link_f();
+			Item* cashe = last_item_;
+			while (cashe->prev_ != nullptr) cashe = cashe->prev_;
+			first_item_ = cashe;
 		}
 		else if (last_item_ == nullptr) {
-			link_l();
+			Item* cashe = first_item_;
+			while (cashe->next_ != nullptr) cashe = cashe->next_;
+			last_item_ = cashe;
 		}
 		return true;
-	}
-	void link_f() {
-		assert(last_item_ != nullptr);
-		Item* cashe = last_item_;
-		while(cashe->prev_ != nullptr) {
-			cashe = cashe->prev_;
-		}
-		cashe->prev_ = first_item_;
-	}
-	void link_l() {
-		assert(first_item_ != nullptr);
-		Item* cashe = first_item_;
-		while (cashe->next_ != nullptr) {
-			cashe = cashe->next_;
-		}
-		cashe->next_ = last_item_;
 	}
 	Item* first_item_;
 	Item*  last_item_;
