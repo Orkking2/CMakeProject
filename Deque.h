@@ -1,17 +1,17 @@
 #pragma once
 
-template <typename T>
+template <typename Type>
 struct Item {
-	Item(T& val, Item* next = nullptr, Item* prev = nullptr) : val_(val), next_(next), prev_(prev) {}
-	T val_;
+	Item(Type& val, Item* next = nullptr, Item* prev = nullptr) : val_(val), next_(next), prev_(prev) {}
+	Type val_;
 	Item* next_;
 	Item* prev_;
 };
 
-template <typename T>
+template <typename Type>
 class Deque {
 public:
-	using Item = Item<T>;
+	using Item = Item<Type>;
 	Deque() : first_item_(nullptr), last_item_(nullptr) {}
 	Deque(T& i) : first_item_(new_plus_assert(i, nullptr, nullptr)), last_item_(nullptr) {}
 	Deque(Deque& d) : first_item_(d.front_ptr()), last_item_(d.back_ptr()) {}
@@ -38,14 +38,7 @@ public:
 	void emplace_front(T& i) {
 		if (first_item_ == nullptr) {
 			first_item_ = new_plus_assert(i, last_item_, nullptr);
-			// Link checking
-			Item* cashe = last_item_;
-			while (cashe != nullptr) {
-				cashe = cashe->prev_;
-			}
-			if (cashe != nullptr) {
-				cashe->prev_ = first_item_;
-			}
+			link_l();
 			break;
 		}
 		first_item_->prev_ = new_plus_assert(i, first_item_, nullptr);
@@ -57,14 +50,7 @@ public:
 	void emplace_back(T& i) {
 		if (last_item_ == nullptr) {
 			last_item_ = new_plus_assert(i, nullptr, first_item_);
-			// Link checking
-			Item* cashe = first_item_;
-			while (cashe != nullptr) {
-				cashe = cashe->next_;
-			}
-			if (cashe != nullptr) {
-				cashe->next_ = last_item_;
-			}
+			link_f();
 			break;
 		}
 		last_item_->next_ = new_plus_assert(i, nullptr, last_item_);
@@ -73,24 +59,24 @@ public:
 	inline void push_front(T i) {
 		emplace_back(i);
 	}
-	T front() {
-		assert(first_item_);
+	Type front() {
+		assert(pop_possible());
 		return first_item_->val_;
 	}
-	T pop_front() {
-		assert(first_item_);
+	Type pop_front() {
+		assert(pop_possible());
 		Item* cashe = first_item_;
 		first_item_ = first_item_->next_;
 		T out = cashe->val_;
 		delete cashe;
 		return out;
 	}
-	T back() {
-		assert(last_item_);
+	Type back() {
+		assert(pop_possible());
 		return last_item_->val_;
 	}
-	T pop_back() {
-		assert(last_item_);
+	Type pop_back() {
+		assert(pop_possible());
 		Item* cashe = last_item_;
 		last_item_ = last_item_->prev_;
 		T out = cashe->val_;
@@ -102,6 +88,38 @@ private:
 		Item* ptr = new Item(i, next, prev);
 		assert(ptr);
 		return ptr;
+	}
+	bool pop_possible() {
+		if (first_item_ == nullptr && last_item_ == nullptr) {
+			return false;
+		}
+		else if (first_item_ == nullptr) {
+			link_f();
+		}
+		else if (last_item_ == nullptr) {
+			link_l();
+		}
+		return true;
+	}
+	void link_f() {
+		assert(last_item_ != nullptr);
+		Item* cashe = last_item_;
+		while (cashe != nullptr) {
+			cashe = cashe->prev_;
+		}
+		if (cashe != nullptr) {
+			cashe->prev_ = first_item_;
+		}
+	}
+	void link_l() {
+		assert(first_item_ != nullptr);
+		Item* cashe = first_item_;
+		while (cashe != nullptr) {
+			cashe = cashe->next_;
+		}
+		if (cashe != nullptr) {
+			cashe->next_ = last_item_;
+		}
 	}
 	Item* first_item_;
 	Item*  last_item_;
