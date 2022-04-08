@@ -1,5 +1,8 @@
 #pragma once
 
+#include <iostream>
+#include <assert.h>
+
 template <typename Type>
 struct Item {
 	Item(Type& val, Item* next = nullptr, Item* prev = nullptr) : val_(val), next_(next), prev_(prev) {}
@@ -13,7 +16,7 @@ class Deque {
 public:
 	using Item = Item<Type>;
 	Deque() : first_item_(nullptr), last_item_(nullptr) {}
-	Deque(T& i) : first_item_(new_plus_assert(i, nullptr, nullptr)), last_item_(nullptr) {}
+	Deque(Type& i) : first_item_(new_plus_assert(i, nullptr, nullptr)), last_item_(nullptr) {}
 	Deque(Deque& d) : first_item_(d.front_ptr()), last_item_(d.back_ptr()) {}
 	~Deque() {
 		while (first_item_ != nullptr) {
@@ -42,10 +45,11 @@ public:
 				while (cashe->prev_ != nullptr) cashe = cashe->prev_;
 				cashe->prev_ = first_item_;
 			}
-			break;
 		}
-		first_item_->prev_ = new_plus_assert(i, first_item_, nullptr);
-		first_item_ = first_item_->prev_;
+		else {
+			first_item_->prev_ = new_plus_assert(i, first_item_, nullptr);
+			first_item_ = first_item_->prev_;
+		}
 	}
 	inline void push_back(Type i) {
 		emplace_back(i);
@@ -58,10 +62,11 @@ public:
 				while (cashe->next_ != nullptr) cashe = cashe->next_;
 				cashe->next_ = last_item_;
 			}
-			break;
 		}
-		last_item_->next_ = new_plus_assert(i, nullptr, last_item_);
-		last_item_ = last_item_->next_;
+		else {
+			last_item_->next_ = new_plus_assert(i, nullptr, last_item_);
+			last_item_ = last_item_->next_;
+		}
 	}
 	inline void push_front(Type i) {
 		emplace_back(i);
