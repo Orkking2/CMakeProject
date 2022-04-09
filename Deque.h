@@ -30,12 +30,8 @@ public:
 			delete cashe;
 		}
 	}
-	Item* front_ptr() {
-		return first_item_;
-	}
-	Item* back_ptr() {
-		return last_item_;
-	}
+	Item* front_ptr() { return first_item_; }
+	Item* back_ptr () { return  last_item_; }
 
 	void emplace_front(Type& i) {
 		if (first_item_ == nullptr) {
@@ -51,9 +47,6 @@ public:
 			first_item_ = first_item_->prev_;
 		}
 	}
-	inline void push_back(Type i) {
-		emplace_back(i);
-	}
 	void emplace_back(Type& i) {
 		if (last_item_ == nullptr) {
 			last_item_ = new_plus_assert(i, nullptr, first_item_);
@@ -68,10 +61,10 @@ public:
 			last_item_ = last_item_->next_;
 		}
 	}
-	inline void push_front(Type i) {
-		emplace_back(i);
-	}
-	enum select {front = 0, back};
+	void push_back (Type i) {  emplace_back(i); }
+	void push_front(Type i) { emplace_front(i); }
+	void push_array_front(Type* arr, Type* end) { for (Type* i = arr; i != end; i++) emplace_front(*i); }
+	void push_array_back (Type* arr, Type* end) { for (Type* i = arr; i != end; i++)  emplace_back(*i); }
 	Type front() {
 		if (last_item_ != nullptr && first_item_ == nullptr && last_item_->prev_ == nullptr) {
 			return last_item_->val_;
@@ -111,6 +104,11 @@ public:
 		Type out = cashe->val_;
 		delete cashe;
 		return out;
+	}
+	void operator = (const Deque& d) {
+		for (Item* i = d.back_ptr(); i != nullptr; i = i->prev_) {
+			push_back(i);
+		}
 	}
 private:
 	Item* new_plus_assert(Type& i, Item* next, Item* prev) {
