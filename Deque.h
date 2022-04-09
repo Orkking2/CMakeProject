@@ -71,11 +71,20 @@ public:
 	inline void push_front(Type i) {
 		emplace_back(i);
 	}
+	enum select {front = 0, back};
 	Type front() {
+		if (last_item_ != nullptr && first_item_ == nullptr && last_item_->prev_ == nullptr) {
+			return last_item_->val_;
+		}
 		assert(pop_possible());
 		return first_item_->val_;
 	}
 	Type pop_front() {
+		if (last_item_ != nullptr && first_item_ == nullptr && last_item_->prev_ == nullptr) {
+			Type out = last_item_->val_;
+			last_item_ = nullptr;
+			return out;
+		}
 		assert(pop_possible());
 		Item* cashe = first_item_;
 		first_item_ = first_item_->next_;
@@ -84,10 +93,18 @@ public:
 		return out;
 	}
 	Type back() {
+		if (first_item_ != nullptr && last_item_ == nullptr && first_item_->next_ == nullptr) {
+			return first_item_->val_;
+		}
 		assert(pop_possible());
 		return last_item_->val_;
 	}
 	Type pop_back() {
+		if (first_item_ != nullptr && last_item_ == nullptr && first_item_->next_ == nullptr) {
+			Type out = first_item_->val_;
+			first_item_ = nullptr;
+			return out;
+		}
 		assert(pop_possible());
 		Item* cashe = last_item_;
 		last_item_ = last_item_->prev_;
