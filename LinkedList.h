@@ -73,8 +73,8 @@ public:
 	void push_front(_Ty i) { emplace_front(i); }
 	void push_array_front(_Ty* arr, _Ty* end) { for (_Ty* i = arr; i != end; i++) emplace_front(*i); }
 	void push_array_back (_Ty* arr, _Ty* end) { for (_Ty* i = arr; i != end; i++)  emplace_back(*i); }
-	void push_array_front(_Ty* arr, int len)  { push_array_front(arr, arr + len) }
-	void push_array_back (_Ty* arr, int len)  { push_array_back (arr, arr + len) }
+	void push_array_front(_Ty* arr,  int len) { push_array_front(arr, arr + len); }
+	void push_array_back (_Ty* arr,  int len) { push_array_back (arr, arr + len); }
 
 	_Ty front() {
 		if (last_item_ != nullptr && first_item_ == nullptr && last_item_->prev_ == nullptr) {
