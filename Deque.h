@@ -6,15 +6,17 @@
 template <typename _Ty>
 struct _Linked_item {
 	_Linked_item(_Ty& val, _Linked_item* next = nullptr, _Linked_item* prev = nullptr) 
-		: val_(val), next_(next), prev_(prev) {}
-	_Ty val_;
-	_Linked_item* next_, prev_;
+	:	val_(val), next_(next), prev_(prev) {}
+	
+	_Ty val_; _Linked_item* next_, prev_;
 };
 
-template <typename _Ty>
+template <typename _Ty, class _Alloc = std::allocator<_Ty>>
 class _Linked_list {
-public:
+private:
 	using Item = _Linked_item<_Ty>;
+	//using traits_t = std::allocator_traits<decltype(_Alloc)>;
+public:
 	_Linked_list() : first_item_(nullptr), last_item_(nullptr) {}
 	_Linked_list(_Ty i) : first_item_(new_plus_assert(i, nullptr, nullptr)), last_item_(nullptr) {}
 	_Linked_list(_Linked_list& d) : first_item_(d.front_ptr()), last_item_(d.back_ptr()) {}
@@ -71,6 +73,9 @@ public:
 	void push_front(_Ty i) { emplace_front(i); }
 	void push_array_front(_Ty* arr, _Ty* end) { for (_Ty* i = arr; i != end; i++) emplace_front(*i); }
 	void push_array_back (_Ty* arr, _Ty* end) { for (_Ty* i = arr; i != end; i++)  emplace_back(*i); }
+	void push_array_front(_Ty* arr, int len)  { push_array_front(arr, arr + len) }
+	void push_array_back (_Ty* arr, int len)  { push_array_back (arr, arr + len) }
+
 	_Ty front() {
 		if (last_item_ != nullptr && first_item_ == nullptr && last_item_->prev_ == nullptr) {
 			return last_item_->val_;
@@ -128,7 +133,7 @@ public:
 	}
 private:
 	Item* new_plus_assert(_Ty& i, Item* next, Item* prev) {
-		Item* ptr = new Item(i, next, prev);
+		Item* ptr = new Item(_Ty, next, prev);
 		assert(ptr);
 		return ptr;
 	}
@@ -147,7 +152,5 @@ private:
 		return true;
 	}
 
-	// 
-	Item* first_item_;
-	Item*  last_item_;
+	Item* first_item_, last_item_;
 };
