@@ -9,6 +9,13 @@ struct _Linked_item {
 	:	val_(val), next_(next), prev_(prev) {}
 	
 	_Ty val_; _Linked_item* next_, prev_;
+
+	inline bool operator == (const _Linked_item& l) {
+		return val_ == l.val_ && next_ == l.next_ && prev_ == l.prev_;
+	}
+	inline bool operator != (const _Linked_item& l) {
+		return !(this == l);
+	}
 };
 
 template <typename _Ty, class _Alloc = std::allocator<_Ty>>
