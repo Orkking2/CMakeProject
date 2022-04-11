@@ -5,8 +5,7 @@
 
 template <typename _Ty>
 struct _Linked_item {
-	_Linked_item(_Ty& val, _Linked_item* next = nullptr, _Linked_item* prev = nullptr) 
-	:	val_(val), next_(next), prev_(prev) {}
+	_Linked_item(_Ty& val, _Linked_item* next = nullptr, _Linked_item* prev = nullptr) : val_(val), next_(next), prev_(prev) {}
 	
 	_Ty val_; _Linked_item* next_, prev_;
 
@@ -18,24 +17,19 @@ struct _Linked_item {
 	}
 };
 
-template <typename _Ty, class _Alloc = std::allocator<_Ty>>
+template <typename _Ty>
 class _Linked_list {
 private:
 	using Item = _Linked_item<_Ty>;
-	//using traits_t = std::allocator_traits<decltype(_Alloc)>;
 public:
-	_Linked_list() : first_item_(nullptr), last_item_(nullptr) {}
-	_Linked_list(_Ty i) : first_item_(new_plus_assert(i, nullptr, nullptr)), last_item_(nullptr) {}
-	_Linked_list(_Linked_list& d) : first_item_(d.front_ptr()), last_item_(d.back_ptr()) {}
+	_Linked_list()                : first_item_(nullptr),                              last_item_(nullptr)      {}
+	_Linked_list(_Ty i)           : first_item_(new_plus_assert(i, nullptr, nullptr)), last_item_(nullptr)      {}
+	_Linked_list(_Linked_list& d) : first_item_(d.front_ptr()),                        last_item_(d.back_ptr()) {}
 	~_Linked_list() {
+		link;
 		while (first_item_ != nullptr) {
 			Item* cashe = first_item_;
 			first_item_ = first_item_->next_;
-			delete cashe;
-		}
-		while (last_item_ != nullptr) {
-			Item* cashe = last_item_;
-			last_item_ = last_item_->prev_;
 			delete cashe;
 		}
 	}
@@ -43,60 +37,41 @@ public:
 	Item* back_ptr () { return  last_item_; }
 
 	void emplace_front(_Ty& i) {
-		if (first_item_ == nullptr) {
-			if (last_item_ != nullptr) {
-				Item* cashe = last_item_;
-				while (cashe->prev_ != nullptr) cashe = cashe->prev_;
-				first_item_ = new_plus_assert(i, cashe, nullptr);
-				cashe->prev_ = first_item_;
-			}
-			else {
-				first_item_ = new_plus_assert(i, nullptr, nullptr);
-			}
-		}
+		if (first_item_ == nullptr) link;
+		if (first_item_ == nullptr) first_item_ = new_plus_assert(i, nullptr, nullptr);
 		else {
 			first_item_->prev_ = new_plus_assert(i, first_item_, nullptr);
 			first_item_ = first_item_->prev_;
 		}
 	}
 	void emplace_back(_Ty& i) {
-		if (last_item_ == nullptr) {
-			if (first_item_ != nullptr) {
-				Item* cashe = first_item_;
-				while (cashe->next_ != nullptr) cashe = cashe->next_;
-				last_item_ = new_plus_assert(i, nullptr, first_item_);
-				cashe->next_ = last_item_;
-			}
-			else {
-				last_item_ = new_plus_assert(i, nullptr, nullptr);
-			}
-		}
+		if (last_item_ == nullptr) link;
+		if (last_item_ == nullptr) last_item_ = new_plus_assert(i, nullptr, nullptr);
 		else {
 			last_item_->next_ = new_plus_assert(i, nullptr, last_item_);
 			last_item_ = last_item_->next_;
 		}
 	}
-	void push_back (_Ty i) {  emplace_back(i); }
-	void push_front(_Ty i) { emplace_front(i); }
-	void push_array_front(_Ty* arr, _Ty* end) { for (_Ty* i = arr; i != end; i++) emplace_front(*i); }
-	void push_array_back (_Ty* arr, _Ty* end) { for (_Ty* i = arr; i != end; i++)  emplace_back(*i); }
-	void push_array_front(_Ty* arr,  int len) { push_array_front(arr, arr + len); }
-	void push_array_back (_Ty* arr,  int len) { push_array_back (arr, arr + len); }
+	inline void push_front(_Ty i) { emplace_front(i); }
+	inline void push_back (_Ty i) { emplace_back (i); }
+
+	void emplace_array_front       (const _Ty*& arr, const _Ty*& end) { for (_Ty* i = arr; i != end; i++) emplace_front(*i); }
+	void emplace_array_back        (const _Ty*& arr, const _Ty*& end) { for (_Ty* i = arr; i != end; i++) emplace_back (*i); }
+	void push_array_front          (const _Ty*& arr, const _Ty*& end) { for (_Ty* i = arr; i != end; i++) push_front   (*i); }
+	void push_array_back           (const _Ty*& arr, const _Ty*& end) { for (_Ty* i = arr; i != end; i++) push_back    (*i); }
+	inline void emplace_array_front(const _Ty*& arr, const  int& len) { emplace_array_front(arr, arr + len); }
+	inline void emplace_array_back (const _Ty*& arr, const  int& len) { emplace_array_back (arr, arr + len); }
+	inline void push_array_front   (const _Ty*& arr, const  int& len) { push_array_front   (arr, arr + len); }
+	inline void push_array_back    (const _Ty*& arr, const  int& len) { push_array_back    (arr, arr + len); }
 
 	_Ty front() {
-		if (last_item_ != nullptr && first_item_ == nullptr && last_item_->prev_ == nullptr) {
-			return last_item_->val_;
-		}
 		assert(pop_possible());
+		link;
 		return first_item_->val_;
 	}
 	_Ty pop_front() {
-		if (last_item_ != nullptr && first_item_ == nullptr && last_item_->prev_ == nullptr) {
-			_Ty out = last_item_->val_;
-			last_item_ = nullptr;
-			return out;
-		}
 		assert(pop_possible());
+		link;
 		Item* cashe = first_item_;
 		first_item_ = first_item_->next_;
 		_Ty out = cashe->val_;
@@ -104,19 +79,13 @@ public:
 		return out;
 	}
 	_Ty back() {
-		if (first_item_ != nullptr && last_item_ == nullptr && first_item_->next_ == nullptr) {
-			return first_item_->val_;
-		}
 		assert(pop_possible());
+		link;
 		return last_item_->val_;
 	}
 	_Ty pop_back() {
-		if (first_item_ != nullptr && last_item_ == nullptr && first_item_->next_ == nullptr) {
-			_Ty out = first_item_->val_;
-			first_item_ = nullptr;
-			return out;
-		}
 		assert(pop_possible());
+		link;
 		Item* cashe = last_item_;
 		last_item_ = last_item_->prev_;
 		_Ty out = cashe->val_;
@@ -144,19 +113,35 @@ private:
 		assert(ptr);
 		return ptr;
 	}
+	void link() {
+		if (first_item_ == nullptr && last_item_ == nullptr) {
+			return;
+		}
+		else if (first_item_ != nullptr && first_item_->next_ == nullptr && last_item_ != nullptr) {
+			for (Item* ptr = last_item_; ptr != nullptr; ptr = ptr->prev_) {
+				first_item_->next_ = ptr;
+			}
+			if (last_item_->prev_ == nullptr) link();
+		}
+		else if (last_item_ != nullptr && last_item_->prev_ == nullptr && first_item_ != nullptr) {
+			for (Item* ptr = first_item_; ptr != nullptr; ptr = ptr->next_) {
+				last_item_->prev_ = ptr;
+			}
+		}
+		else if (first_item_ != nullptr && first_item_->next_ != nullptr && last_item_ == nullptr) {
+			for (Item* ptr = first_item_; ptr != nullptr; ptr = ptr->next_) {
+				last_item_ = ptr;
+			}
+		}
+		else if (last_item_ != nullptr && last_item_->prev_ != nullptr && first_item_ == nullptr) {
+			for (Item* ptr = first_item_; ptr != nullptr; ptr = ptr->next_) {
+				last_item_ = ptr;
+			}
+		}
+	}
 	bool pop_possible() {
 		if (first_item_ == nullptr && last_item_ == nullptr) return false;
-		else if (first_item_ == nullptr) {
-			Item* cashe = last_item_;
-			while (cashe->prev_ != nullptr) cashe = cashe->prev_;
-			first_item_ = cashe;
-		}
-		else if (last_item_ == nullptr) {
-			Item* cashe = first_item_;
-			while (cashe->next_ != nullptr) cashe = cashe->next_;
-			last_item_ = cashe;
-		}
-		return true;
+		else return true;
 	}
 
 	Item* first_item_, last_item_;
