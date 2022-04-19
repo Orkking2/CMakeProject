@@ -45,14 +45,18 @@ public:
 	Item* back_ptr () { link; return  last_item_; }
 
 	void emplace_front(_Ty& i) {
-		if (first_item_ == nullptr) { link; first_item_ = new_plus_assert(i, nullptr, nullptr); }
+		if (first_item_ == nullptr) { 
+			link; 
+			first_item_ = new_plus_assert(i, nullptr, nullptr); }
 		else {
 			first_item_->prev_ = new_plus_assert(i, first_item_, nullptr);
 			first_item_ = first_item_->prev_;
 		}
 	}
 	void emplace_back(_Ty& i) {
-		if (last_item_ == nullptr) { link; last_item_ = new_plus_assert(i, nullptr, nullptr); }
+		if (last_item_ == nullptr) { 
+			link; 
+			last_item_ = new_plus_assert(i, nullptr, nullptr); }
 		else {
 			last_item_->next_ = new_plus_assert(i, nullptr, last_item_);
 			last_item_ = last_item_->next_;
@@ -71,12 +75,12 @@ public:
 	inline void push_array_back    (_Ty* arr, int  len) { for (int i = 0;    i <= len; i++) push_back    (arr[i]); }
 
 	_Ty front() {
-		assert(pop_possible());
+		assert(not_null());
 		link;
 		return first_item_->val_;
 	}
 	_Ty pop_front() {
-		assert(pop_possible());
+		assert(not_null());
 		link;
 		Item* cashe = first_item_;
 		first_item_ = first_item_->next_;
@@ -85,12 +89,12 @@ public:
 		return out;
 	}
 	_Ty back() {
-		assert(pop_possible());
+		assert(not_null());
 		link;
 		return last_item_->val_;
 	}
 	_Ty pop_back() {
-		assert(pop_possible());
+		assert(not_null());
 		link;
 		Item* cashe = last_item_;
 		last_item_ = last_item_->prev_;
@@ -127,7 +131,7 @@ private:
 			for (Item* ptr = last_item_; ptr != nullptr; ptr = ptr->prev_) {
 				first_item_->next_ = ptr;
 			}
-			if (last_item_->prev_ == nullptr) link();
+			link();
 		}
 		else if (last_item_ != nullptr && last_item_->prev_ == nullptr && first_item_ != nullptr) {
 			for (Item* ptr = first_item_; ptr != nullptr; ptr = ptr->next_) {
@@ -145,9 +149,9 @@ private:
 			}
 		}
 	}
-	bool pop_possible() {
-		if (first_item_ == nullptr && last_item_ == nullptr) return false;
-		else return true;
+	bool not_null() {
+		if (first_item_ == nullptr && last_item_ == nullptr) { return false; }
+		else { return true; }
 	}
 
 	Item* first_item_, last_item_;
