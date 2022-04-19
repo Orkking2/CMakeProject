@@ -12,7 +12,8 @@ public:
 	Item(const _Ty& val, const Item*& next = nullptr, const Item*& prev = nullptr) : val_(val), next_(next), prev_(prev) {}
 	
 	_Ty val_;
-	Item* next_, prev_;
+	Item* next_;
+	Item* prev_;
 };
 
 template <typename _Ty>
@@ -60,14 +61,14 @@ public:
 	inline void push_front(_Ty i) { emplace_front(i); }
 	inline void push_back (_Ty i) { emplace_back (i); }
 
-	inline void emplace_array_front(const _Ty*& arr, const _Ty*& end) { for (_Ty* i = arr; i != end; i++) emplace_front   (*i ); }
-	inline void emplace_array_back (const _Ty*& arr, const _Ty*& end) { for (_Ty* i = arr; i != end; i++) emplace_back    (*i ); }
-	inline void push_array_front   (const _Ty*& arr, const _Ty*& end) { for (_Ty* i = arr; i != end; i++) push_front      (*i ); }
-	inline void push_array_back    (const _Ty*& arr, const _Ty*& end) { for (_Ty* i = arr; i != end; i++) push_back       (*i ); }
-	inline void emplace_array_front(const _Ty*& arr, const int & len) { for (int i = 0;    i <= len; i++) emplace_front(arr[i]); }
-	inline void emplace_array_back (const _Ty*& arr, const int & len) { for (int i = 0;    i <= len; i++) emplace_back (arr[i]); }
-	inline void push_array_front   (const _Ty*& arr, const int & len) { for (int i = 0;    i <= len; i++) push_front   (arr[i]); }
-	inline void push_array_back    (const _Ty*& arr, const int & len) { for (int i = 0;    i <= len; i++) push_back    (arr[i]); }
+	inline void emplace_array_front(_Ty* arr, _Ty* end) { for (_Ty* i = arr; i != end; i++) emplace_front   (*i ); }
+	inline void emplace_array_back (_Ty* arr, _Ty* end) { for (_Ty* i = arr; i != end; i++) emplace_back    (*i ); }
+	inline void push_array_front   (_Ty* arr, _Ty* end) { for (_Ty* i = arr; i != end; i++) push_front      (*i ); }
+	inline void push_array_back    (_Ty* arr, _Ty* end) { for (_Ty* i = arr; i != end; i++) push_back       (*i ); }
+	inline void emplace_array_front(_Ty* arr, int  len) { for (int i = 0;    i <= len; i++) emplace_front(arr[i]); }
+	inline void emplace_array_back (_Ty* arr, int  len) { for (int i = 0;    i <= len; i++) emplace_back (arr[i]); }
+	inline void push_array_front   (_Ty* arr, int  len) { for (int i = 0;    i <= len; i++) push_front   (arr[i]); }
+	inline void push_array_back    (_Ty* arr, int  len) { for (int i = 0;    i <= len; i++) push_back    (arr[i]); }
 
 	_Ty front() {
 		assert(pop_possible());
