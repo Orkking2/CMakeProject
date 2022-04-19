@@ -29,11 +29,11 @@ public:
 		std::va_list list;
 		va_start(list, count);
 		for (int i = 0; i < count; i++) push_back(va_arg(list, _Ty));
-		link;
+		link();
 		va_end(list);
 	}
 	~_Linked_list() {
-		link;
+		link();
 		while (first_item_ != nullptr) {
 			Item* cashe = first_item_;
 			first_item_ = first_item_->next_;
@@ -41,12 +41,12 @@ public:
 		}
 		if (last_item_ != nullptr) delete last_item_;
 	}
-	Item* front_ptr() { link; return first_item_; }
-	Item* back_ptr () { link; return  last_item_; }
+	Item* front_ptr() { link(); return first_item_; }
+	Item* back_ptr () { link(); return  last_item_; }
 
 	void emplace_front(_Ty& i) {
 		if (first_item_ == nullptr) { 
-			link; 
+			link(); 
 			first_item_ = new_plus_assert(i, nullptr, nullptr); }
 		else {
 			first_item_->prev_ = new_plus_assert(i, first_item_, nullptr);
@@ -55,7 +55,7 @@ public:
 	}
 	void emplace_back(_Ty& i) {
 		if (last_item_ == nullptr) { 
-			link; 
+			link(); 
 			last_item_ = new_plus_assert(i, nullptr, nullptr); }
 		else {
 			last_item_->next_ = new_plus_assert(i, nullptr, last_item_);
@@ -76,12 +76,12 @@ public:
 
 	_Ty front() {
 		assert(not_null());
-		link;
+		link();
 		return first_item_->val_;
 	}
 	_Ty pop_front() {
 		assert(not_null());
-		link;
+		link();
 		Item* cashe = first_item_;
 		first_item_ = first_item_->next_;
 		_Ty out = cashe->val_;
@@ -90,12 +90,12 @@ public:
 	}
 	_Ty back() {
 		assert(not_null());
-		link;
+		link();
 		return last_item_->val_;
 	}
 	_Ty pop_back() {
 		assert(not_null());
-		link;
+		link();
 		Item* cashe = last_item_;
 		last_item_ = last_item_->prev_;
 		_Ty out = cashe->val_;
@@ -118,8 +118,8 @@ public:
 		}
 	}
 private:
-	Item* new_plus_assert(_Ty& i, Item* next, Item* prev) {
-		Item* ptr = new Item(_Ty, next, prev);
+	Item* new_plus_assert(const _Ty& i, const Item*& next, const Item*& prev) {
+		Item* ptr = new Item(i, next, prev);
 		assert(ptr);
 		return ptr;
 	}
@@ -154,5 +154,6 @@ private:
 		else { return true; }
 	}
 
-	Item* first_item_, last_item_;
+	Item* first_item_;
+	Item* last_item_;
 };
