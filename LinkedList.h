@@ -21,11 +21,11 @@ class _Linked_list {
 private:
 	using Item = _Linked_item<_Ty>;
 public:
-	_Linked_list()                : first_item_(nullptr),                              last_item_(nullptr)      {}
-	_Linked_list(_Ty i)           : first_item_(new_plus_assert(i, nullptr, nullptr)), last_item_(nullptr)      {}
+	_Linked_list()                : first_item_(nullptr),                                 last_item_(nullptr)      {}
+	_Linked_list(_Ty i)           : first_item_(new_plus_assert(i, nullptr, nullptr)),       last_item_(nullptr)      {}
 	_Linked_list(_Linked_list& d) : first_item_(d.front_ptr()),                        last_item_(d.back_ptr()) {}
 	// Ellipses are sussy
-	_Linked_list(int count, ...)  : first_item_(nullptr),                              last_item_(nullptr)      {
+	_Linked_list(int count, ...)  : first_item_(nullptr),                                 last_item_(nullptr)      {
 		std::va_list list;
 		va_start(list, count);
 		for (int i = 0; i < count; i++) push_back(va_arg(list, _Ty));
@@ -45,18 +45,16 @@ public:
 	Item* back_ptr () { link(); return  last_item_; }
 
 	void emplace_front(_Ty& i) {
-		if (first_item_ == nullptr) { 
-			link(); 
-			first_item_ = new_plus_assert(i, nullptr, nullptr); }
+		link(); 
+		if (first_item_ == nullptr) { first_item_ = new_plus_assert(i, nullptr, nullptr); link(); }
 		else {
 			first_item_->prev_ = new_plus_assert(i, first_item_, nullptr);
 			first_item_ = first_item_->prev_;
 		}
 	}
 	void emplace_back(_Ty& i) {
-		if (last_item_ == nullptr) { 
-			link(); 
-			last_item_ = new_plus_assert(i, nullptr, nullptr); }
+		link(); 
+		if (last_item_ == nullptr) { last_item_ = new_plus_assert(i, nullptr, nullptr); link(); }
 		else {
 			last_item_->next_ = new_plus_assert(i, nullptr, last_item_);
 			last_item_ = last_item_->next_;
@@ -69,18 +67,18 @@ public:
 	inline void emplace_array_back (_Ty* arr, _Ty* end) { for (_Ty* i = arr; i != end; i++) emplace_back    (*i ); }
 	inline void push_array_front   (_Ty* arr, _Ty* end) { for (_Ty* i = arr; i != end; i++) push_front      (*i ); }
 	inline void push_array_back    (_Ty* arr, _Ty* end) { for (_Ty* i = arr; i != end; i++) push_back       (*i ); }
-	inline void emplace_array_front(_Ty* arr, int  len) { for (int i = 0;    i <= len; i++) emplace_front(arr[i]); }
-	inline void emplace_array_back (_Ty* arr, int  len) { for (int i = 0;    i <= len; i++) emplace_back (arr[i]); }
-	inline void push_array_front   (_Ty* arr, int  len) { for (int i = 0;    i <= len; i++) push_front   (arr[i]); }
-	inline void push_array_back    (_Ty* arr, int  len) { for (int i = 0;    i <= len; i++) push_back    (arr[i]); }
+	inline void emplace_array_front(_Ty* arr, int  len) { for (int  i = 0;   i <= len; i++) emplace_front(arr[i]); }
+	inline void emplace_array_back (_Ty* arr, int  len) { for (int  i = 0;   i <= len; i++) emplace_back (arr[i]); }
+	inline void push_array_front   (_Ty* arr, int  len) { for (int  i = 0;   i <= len; i++) push_front   (arr[i]); }
+	inline void push_array_back    (_Ty* arr, int  len) { for (int  i = 0;   i <= len; i++) push_back    (arr[i]); }
 
 	_Ty front() {
-		assert(not_null());
+		assert(not_nullptr());
 		link();
 		return first_item_->val_;
 	}
 	_Ty pop_front() {
-		assert(not_null());
+		assert(not_nullptr());
 		link();
 		Item* cashe = first_item_;
 		first_item_ = first_item_->next_;
@@ -89,12 +87,12 @@ public:
 		return out;
 	}
 	_Ty back() {
-		assert(not_null());
+		assert(not_nullptr());
 		link();
 		return last_item_->val_;
 	}
 	_Ty pop_back() {
-		assert(not_null());
+		assert(not_nullptr());
 		link();
 		Item* cashe = last_item_;
 		last_item_ = last_item_->prev_;
@@ -113,9 +111,7 @@ public:
 			last_item_ = last_item_->prev_;
 			delete cashe;
 		}
-		for (Item* i = d.back_ptr(); i != nullptr; i = i->prev_) {
-			push_back(i);
-		}
+		for (Item* i = d.back_ptr(); i != nullptr; i = i->prev_) push_back(i);
 	}
 private:
 	Item* new_plus_assert(const _Ty& i, const Item*& next, const Item*& prev) {
@@ -149,7 +145,7 @@ private:
 			}
 		}
 	}
-	bool not_null() {
+	bool not_nullptr() {
 		if (first_item_ == nullptr && last_item_ == nullptr) { return false; }
 		else { return true; }
 	}
