@@ -1,15 +1,15 @@
 #pragma once
 
 #include <assert.h>
-#include <memory>
 #include <cstdarg>
+#include <memory>
 
 template <typename _Ty>
 class _Linked_item {
 private: 
 	using Item = _Linked_item<_Ty>;
 public:
-	Item(const _Ty& val, const Item*& next = nullptr, const Item*& prev = nullptr) : val_(val), next_(next), prev_(prev) {}
+	Item(const _Ty& val, Item* next = nullptr, Item* prev = nullptr) : val_(val), next_(next), prev_(prev) {}
 	
 	_Ty val_;
 	Item* next_;
@@ -21,11 +21,11 @@ class _Linked_list {
 private:
 	using Item = _Linked_item<_Ty>;
 public:
-	_Linked_list()                : first_item_(nullptr),                                 last_item_(nullptr)      {}
-	_Linked_list(_Ty i)           : first_item_(new_plus_assert(i, nullptr, nullptr)),       last_item_(nullptr)      {}
+	_Linked_list()                : first_item_(nullptr),                              last_item_(nullptr)      {}
+	_Linked_list(_Ty i)           : first_item_(new_plus_assert(i, nullptr, nullptr)), last_item_(nullptr)      {}
 	_Linked_list(_Linked_list& d) : first_item_(d.front_ptr()),                        last_item_(d.back_ptr()) {}
 	// Ellipses are sussy
-	_Linked_list(int count, ...)  : first_item_(nullptr),                                 last_item_(nullptr)      {
+	_Linked_list(int count, ...)  : first_item_(nullptr),                              last_item_(nullptr)      {
 		std::va_list list;
 		va_start(list, count);
 		for (int i = 0; i < count; i++) push_back(va_arg(list, _Ty));
@@ -114,7 +114,7 @@ public:
 		for (Item* i = d.back_ptr(); i != nullptr; i = i->prev_) push_back(i);
 	}
 private:
-	Item* new_plus_assert(const _Ty& i, const Item*& next, const Item*& prev) {
+	Item* new_plus_assert(const _Ty& i, Item* next, Item* prev) {
 		Item* ptr = new Item(i, next, prev);
 		assert(ptr);
 		return ptr;
