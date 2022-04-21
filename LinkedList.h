@@ -1,5 +1,6 @@
 #pragma once
 
+#include <type_traits>
 #include <assert.h>
 #include <cstdarg>
 #include <memory>
@@ -80,7 +81,7 @@ public:
 	inline void emplace_array_back (_Ty* arr, int  len) { for (int  i = 0;    i  < len; i++) emplace_back (arr[i]); }
 	inline void push_array_front   (_Ty* arr, int  len) { for (int  i = 0;    i  < len; i++) push_front   (arr[i]); }
 	inline void push_array_back    (_Ty* arr, int  len) { for (int  i = 0;    i  < len; i++) push_back    (arr[i]); }
-
+	
 	_Ty front() {
 		assert(not_null());
 		link();
