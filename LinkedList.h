@@ -114,7 +114,7 @@ public:
 			delete cashe;
 		}
 		if (last_item_) delete last_item_;
-		for (Item* i = d.back_ptr(); i; i = i->prev_) push_back(i);
+		for (Item* i = d.back_ptr(); i; i = i->prev_) emplace_back(*i);
 	}
 private:
 	Item* new_plus_assert(const _Ty& i, Item* next, Item* prev) {
@@ -124,10 +124,10 @@ private:
 	}
 	bool not_null() { if (!first_item_ && !last_item_) return false; return true; }
 	void link() {
-		if (!first_item_ && !last_item_) {}
-		else if (first_item_ && !(first_item_->next_) &&  last_item_ ) { for (Item* ptr = last_item_;  ptr; ptr = ptr->prev_) first_item_->next_ = ptr; link(); }
-		else if (last_item_  && !(last_item_ ->prev_) &&  first_item_) { for (Item* ptr = first_item_; ptr; ptr = ptr->next_) last_item_ ->prev_ = ptr; link(); }
-		else if (last_item_  &&   last_item_ ->prev_  && !first_item_) { for (Item* ptr = last_item_;  ptr; ptr = ptr->prev_) first_item_ = ptr; }
-		else if (first_item_ &&   first_item_->next_  && !last_item_ ) { for (Item* ptr = first_item_; ptr; ptr = ptr->next_) last_item_  = ptr; }
+		if      (!first_item_ && !last_item_) {}
+		else if ( first_item_ && !first_item_->next_ &&  last_item_ ) { for (Item* ptr = last_item_;  ptr; ptr = ptr->prev_) first_item_->next_ = ptr; link(); }
+		else if ( last_item_  && !last_item_ ->prev_ &&  first_item_) { for (Item* ptr = first_item_; ptr; ptr = ptr->next_) last_item_ ->prev_ = ptr; link(); }
+		else if ( last_item_  &&  last_item_ ->prev_ && !first_item_) { for (Item* ptr = last_item_;  ptr; ptr = ptr->prev_) first_item_ = ptr; }
+		else if ( first_item_ &&  first_item_->next_ && !last_item_ ) { for (Item* ptr = first_item_; ptr; ptr = ptr->next_) last_item_  = ptr; }
 	}
 };
