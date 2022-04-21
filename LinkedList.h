@@ -25,11 +25,11 @@ class _Linked_list {
 private:
 	using Item = _Linked_item<_Ty>;
 public:
-	_Linked_list()                : first_item_(NULL),                                 last_item_(NULL)      {}
-	_Linked_list(_Ty i)           : first_item_(new_plus_assert(i, NULL, NULL)),       last_item_(NULL)      {}
-	_Linked_list(_Linked_list& d) : first_item_(d.front_ptr()),                        last_item_(d.back_ptr()) {}
+	_Linked_list()                : first_item_(NULL),                           last_item_(NULL)         {}
+	_Linked_list(_Ty i)           : first_item_(new_plus_assert(i, NULL, NULL)), last_item_(NULL)         {}
+	_Linked_list(_Linked_list& l) : first_item_(l.front_ptr()),                  last_item_(l.back_ptr()) {}
 	// Ellipses are sussy
-	_Linked_list(int count, ...)  : first_item_(NULL),                                 last_item_(NULL)      {
+	_Linked_list(int count, ...)  : first_item_(NULL),                           last_item_(NULL)         {
 		std::va_list list;
 		va_start(list, count);
 		for (int i = 0; i < count; i++) push_back(va_arg(list, _Ty));
