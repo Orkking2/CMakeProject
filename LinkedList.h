@@ -45,8 +45,9 @@ public:
 		}
 		if (last_item_) delete last_item_;
 	}
+
 	Item* front_ptr() { link(); return first_item_; }
-	Item* back_ptr () { link(); return  last_item_; }
+	Item* back_ptr () { link(); return last_item_;  }
 
 	void emplace_front(_Ty& i) {
 		if (!first_item_) { first_item_ = new_plus_assert(i, NULL, NULL); link(); }
