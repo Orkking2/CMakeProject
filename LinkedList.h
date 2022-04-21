@@ -69,6 +69,7 @@ public:
 	inline void push_front(_Ty i) { emplace_front(i); }
 	inline void push_back (_Ty i) { emplace_back (i); }
 
+	// _Ty*, _Ty* exclusive -- _Ty*, int inclusive
 	inline void emplace_array_front(_Ty* arr, _Ty* end) { for (_Ty* i = arr; i != end; i++) emplace_front   (*i ); }
 	inline void emplace_array_back (_Ty* arr, _Ty* end) { for (_Ty* i = arr; i != end; i++) emplace_back    (*i ); }
 	inline void push_array_front   (_Ty* arr, _Ty* end) { for (_Ty* i = arr; i != end; i++) push_front      (*i ); }
