@@ -24,6 +24,9 @@ template <typename _Ty>
 class _Linked_list {
 private:
 	using Item = _Linked_item<_Ty>;
+
+	Item* first_item_;
+	Item* last_item_;
 public:
 	_Linked_list()                : first_item_(NULL),                           last_item_(NULL)         {}
 	_Linked_list(_Ty i)           : first_item_(new_plus_assert(i, NULL, NULL)), last_item_(NULL)         {}
@@ -119,18 +122,12 @@ private:
 		assert(ptr);
 		return ptr;
 	}
-	bool not_null() {
-		if (!first_item_ && !last_item_) { return false; }
-		else { return true; }
-	}
+	bool not_null() { if (!first_item_ && !last_item_) return false; return true; }
 	void link() {
-		if (!first_item_ && !last_item_) { return; }
-		else if (first_item_ && !(first_item_->next_) &&  last_item_ ) { for (Item* ptr = last_item_;  ptr; ptr = ptr->prev_) { first_item_->next_ = ptr; } link(); }
-		else if (last_item_  && !(last_item_ ->prev_) &&  first_item_) { for (Item* ptr = first_item_; ptr; ptr = ptr->next_) { last_item_ ->prev_ = ptr; } link(); }
-		else if (last_item_  &&   last_item_ ->prev_  && !first_item_) { for (Item* ptr = last_item_;  ptr; ptr = ptr->prev_) { first_item_ = ptr; } }
-		else if (first_item_ &&   first_item_->next_  && !last_item_ ) { for (Item* ptr = first_item_; ptr; ptr = ptr->next_) { last_item_  = ptr; } }
+		if (!first_item_ && !last_item_) {}
+		else if (first_item_ && !(first_item_->next_) &&  last_item_ ) { for (Item* ptr = last_item_;  ptr; ptr = ptr->prev_) first_item_->next_ = ptr; link(); }
+		else if (last_item_  && !(last_item_ ->prev_) &&  first_item_) { for (Item* ptr = first_item_; ptr; ptr = ptr->next_) last_item_ ->prev_ = ptr; link(); }
+		else if (last_item_  &&   last_item_ ->prev_  && !first_item_) { for (Item* ptr = last_item_;  ptr; ptr = ptr->prev_) first_item_ = ptr; }
+		else if (first_item_ &&   first_item_->next_  && !last_item_ ) { for (Item* ptr = first_item_; ptr; ptr = ptr->next_) last_item_  = ptr; }
 	}
-
-	Item* first_item_;
-	Item* last_item_;
 };
