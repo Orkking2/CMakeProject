@@ -128,7 +128,7 @@ private:
 		assert(ptr);
 		return ptr;
 	}
-	bool not_null() { if (!first_item_ && !last_item_) return false; return true; }
+	bool not_null()    { if (!first_item_ && !last_item_) return false; return true; }
 
 	Item* find_first() { Item* out; for (Item* ptr = last_item_;  ptr; ptr = ptr->prev_) out = ptr; return out; }
 	Item* find_last () { Item* out; for (Item* ptr = first_item_; ptr; ptr = ptr->next_) out = ptr; return out; }
