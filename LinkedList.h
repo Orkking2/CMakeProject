@@ -29,14 +29,13 @@ private:
 	Item* first_item_;
 	Item* last_item_;
 public:
-	_Linked_list()                : first_item_(NULL),                           last_item_(NULL)         {}
-	_Linked_list(_Ty i)           : first_item_(new_plus_assert(i, NULL, NULL)), last_item_(NULL)         {}
-	_Linked_list(_Linked_list& l) : first_item_(l.front_ptr()),                  last_item_(l.back_ptr()) {}
-	// Ellipses are sussy
-	_Linked_list(int count, ...)  : first_item_(NULL),                           last_item_(NULL)         {
+	_Linked_list()                       : first_item_(NULL),                           last_item_(NULL)         {}
+	_Linked_list(_Ty i)                  : first_item_(new_plus_assert(i, NULL, NULL)), last_item_(NULL)         {}
+	_Linked_list(_Linked_list& l)        : first_item_(l.front_ptr()),                  last_item_(l.back_ptr()) {}
+	_Linked_list(_Ty end, _Ty item, ...) : first_item_(NULL),                           last_item_(NULL)         {
 		std::va_list list;
-		va_start(list, count);
-		for (int i = 0; i < count; i++) push_back(va_arg(list, _Ty));
+		va_start(list, item);
+		for (_Ty i = item; i != end; i = va_arg(list, _Ty)) push_back(i);
 		link();
 		va_end(list);
 	}
@@ -130,11 +129,15 @@ private:
 		return ptr;
 	}
 	bool not_null() { if (!first_item_ && !last_item_) return false; return true; }
+
+	Item* find_first() { Item* out; for (Item* ptr = last_item_;  ptr; ptr = ptr->prev_) out = ptr; return out; }
+	Item* find_last () { Item* out; for (Item* ptr = first_item_; ptr; ptr = ptr->next_) out = ptr; return out; }
+
 	void link() {
 		if      (!first_item_ && !last_item_) {}
-		else if ( first_item_ && !first_item_->next_ &&  last_item_ ) { for (Item* ptr = last_item_;  ptr; ptr = ptr->prev_) first_item_->next_ = ptr; link(); }
-		else if ( last_item_  && !last_item_ ->prev_ &&  first_item_) { for (Item* ptr = first_item_; ptr; ptr = ptr->next_) last_item_ ->prev_ = ptr; link(); }
-		else if ( last_item_  &&  last_item_ ->prev_ && !first_item_) { for (Item* ptr = last_item_;  ptr; ptr = ptr->prev_) first_item_ = ptr; }
-		else if ( first_item_ &&  first_item_->next_ && !last_item_ ) { for (Item* ptr = first_item_; ptr; ptr = ptr->next_) last_item_  = ptr; }
+		else if ( first_item_ && !first_item_->next_ &&  last_item_ ) { Item* ptr   = find_first(); first_item_->next_ = ptr; ptr->prev_ = first_item_; }
+		else if ( last_item_  && !last_item_ ->prev_ &&  first_item_) { Item* ptr   = find_last (); last_item_ ->prev_ = ptr; ptr->next_ = last_item_;  }
+		else if ( first_item_ &&  first_item_->next_ && !last_item_ ) { last_item_  = find_last (); }
+		else if ( last_item_  &&  last_item_ ->prev_ && !first_item_) { first_item_ = find_first(); }
 	}
 };
