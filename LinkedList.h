@@ -1,18 +1,20 @@
 #pragma once
 
-#include <type_traits>
 #include <assert.h>
 #include <cstdarg>
 #include <memory>
 
-constexpr int null = 0;
+#ifndef NULL
+#define NULL 0
+#endif // ifndef NULL
+
 
 template <typename _Ty>
 class _Linked_item {
 private: 
 	using Item = _Linked_item<_Ty>;
 public:
-	Item(const _Ty& val, Item* next = null, Item* prev = null) : val_(val), next_(next), prev_(prev) {}
+	Item(const _Ty& val, Item* next = NULL, Item* prev = NULL) : val_(val), next_(next), prev_(prev) {}
 	
 	_Ty val_;
 	Item* next_;
@@ -27,11 +29,11 @@ private:
 	Item* first_item_;
 	Item* last_item_;
 public:
-	_Linked_list()                : first_item_(null),                           last_item_(null)         {}
-	_Linked_list(_Ty i)           : first_item_(new_plus_assert(i, null, null)), last_item_(null)         {}
+	_Linked_list()                : first_item_(NULL),                           last_item_(NULL)         {}
+	_Linked_list(_Ty i)           : first_item_(new_plus_assert(i, NULL, NULL)), last_item_(NULL)         {}
 	_Linked_list(_Linked_list& l) : first_item_(l.front_ptr()),                  last_item_(l.back_ptr()) {}
 	// Ellipses are sussy
-	_Linked_list(int count, ...)  : first_item_(null),                           last_item_(null)         {
+	_Linked_list(int count, ...)  : first_item_(NULL),                           last_item_(NULL)         {
 		std::va_list list;
 		va_start(list, count);
 		for (int i = 0; i < count; i++) push_back(va_arg(list, _Ty));
@@ -52,23 +54,22 @@ public:
 	Item* back_ptr () { link(); return last_item_;  }
 
 	void emplace_front(_Ty& i) {
-		if (!first_item_) { first_item_ = new_plus_assert(i, null, null); link(); }
+		if (!first_item_) { first_item_ = new_plus_assert(i, NULL, NULL); link(); }
 		else {
-			first_item_->prev_ = new_plus_assert(i, first_item_, null);
+			first_item_->prev_ = new_plus_assert(i, first_item_, NULL);
 			first_item_ = first_item_->prev_;
 		}
 	}
 	void emplace_back(_Ty& i) {
-		if (!last_item_) { last_item_ = new_plus_assert(i, null, null); link(); }
+		if (!last_item_) { last_item_ = new_plus_assert(i, NULL, NULL); link(); }
 		else {
-			last_item_->next_ = new_plus_assert(i, null, last_item_);
+			last_item_->next_ = new_plus_assert(i, NULL, last_item_);
 			last_item_ = last_item_->next_;
 		}
 	}
 	inline void push_front(_Ty i) { emplace_front(i); }
 	inline void push_back (_Ty i) { emplace_back (i); }
 
-	// _Ty*, _Ty* exclusive ** _Ty*, int inclusive
 	inline void emplace_array_front(_Ty* arr, _Ty* end) { for (_Ty* i = arr;  i != end; i++) emplace_front   (*i ); }
 	inline void emplace_array_back (_Ty* arr, _Ty* end) { for (_Ty* i = arr;  i != end; i++) emplace_back    (*i ); }
 	inline void push_array_front   (_Ty* arr, _Ty* end) { for (_Ty* i = arr;  i != end; i++) push_front      (*i ); }
@@ -77,11 +78,13 @@ public:
 	inline void emplace_array_back (_Ty* arr, _Ty  end) { for (_Ty* i = arr; *i != end; i++) emplace_back    (*i ); }
 	inline void push_array_front   (_Ty* arr, _Ty  end) { for (_Ty* i = arr; *i != end; i++) push_front      (*i ); }
 	inline void push_array_back    (_Ty* arr, _Ty  end) { for (_Ty* i = arr; *i != end; i++) push_back       (*i ); }
+	/*
 	inline void emplace_array_front(_Ty* arr, int  len) { for (int  i = 0;    i  < len; i++) emplace_front(arr[i]); }
 	inline void emplace_array_back (_Ty* arr, int  len) { for (int  i = 0;    i  < len; i++) emplace_back (arr[i]); }
 	inline void push_array_front   (_Ty* arr, int  len) { for (int  i = 0;    i  < len; i++) push_front   (arr[i]); }
 	inline void push_array_back    (_Ty* arr, int  len) { for (int  i = 0;    i  < len; i++) push_back    (arr[i]); }
-	
+	*/
+
 	_Ty front() {
 		assert(not_null());
 		link();
