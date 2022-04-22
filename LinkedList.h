@@ -8,37 +8,44 @@
 #define NULL 0
 #endif // ifndef NULL
 
+template <typename _Ty>
+struct _Linked_item {
+	_Linked_item(const _Ty& val, _Linked_item* next = NULL, _Linked_item* prev = NULL) : val_(val), next_(next), prev_(prev) {}
+
+	_Ty val_;
+	_Linked_item* next_;
+	_Linked_item* prev_;
+};
 
 template <typename _Ty>
-class _Linked_item {
-private: 
-	using Item = _Linked_item<_Ty>;
-public:
-	Item(const _Ty& val, Item* next = NULL, Item* prev = NULL) : val_(val), next_(next), prev_(prev) {}
-	
-	_Ty val_;
-	Item* next_;
-	Item* prev_;
+struct _Array_with_count {
+	_Array_with_count(_Ty* arr, int count) : arr(arr), count(count) {}
+	_Ty* arr;
+	int count;
+	~_Array_with_count() {
+		for (int i = 0; i < count; i++) {
+			_Ty* cashe = arr++;
+			delete cashe;
+		}
+	}
 };
 
 template <typename _Ty>
 class _Linked_list {
 private:
+	using Arr  = _Array_with_count<_Ty>;
 	using Item = _Linked_item<_Ty>;
-
-	struct Arr {
-		Arr(_Ty* arr, int count) : arr(arr), count(count) {}
-		_Ty* arr;
-		int count;
-	};
 
 	Item* first_item_;
 	Item* last_item_;
 public:
-	_Linked_list()                       : first_item_(NULL),                           last_item_(NULL)         {}
-	_Linked_list(_Ty i)                  : first_item_(new_plus_assert(i, NULL, NULL)), last_item_(NULL)         {}
-	_Linked_list(_Linked_list& l)        : first_item_(l.front_ptr()),                  last_item_(l.back_ptr()) {}
-	_Linked_list(_Ty end, _Ty item, ...) : first_item_(NULL),                           last_item_(NULL)         {
+	_Linked_list()                       : first_item_(NULL),                           last_item_(NULL) {}
+	_Linked_list(_Ty i)                  : first_item_(new_plus_assert(i, NULL, NULL)), last_item_(NULL) {}
+	_Linked_list(_Linked_list& l)        : first_item_(NULL),                           last_item_(NULL) {
+		Arr arr = l.get_array();
+		push_array_back(arr.arr, arr.arr[arr.count]);
+	}
+	_Linked_list(_Ty end, _Ty item, ...) : first_item_(NULL),                           last_item_(NULL) {
 		std::va_list list;
 		va_start(list, item);
 		for (_Ty i = item; i != end; i = va_arg(list, _Ty)) push_back(i);
@@ -58,10 +65,17 @@ public:
 	Item* front_ptr() { link(); return first_item_; }
 	Item* back_ptr () { link(); return last_item_;  }
 
-	Arr get_list() {
-		_Ty* arr;
-		link();
-		for(Item* ptr = first_item_; ptr; ptr = ptr->next_) 
+	Arr get_array() {
+		assert(not_null()); link();
+		int count = 0;
+		for (Item* ptr = first_item_; ptr; ptr = ptr->next_) count++;
+		Item* ptr = first_item_;
+		_Ty* arr = new _Ty[count];
+		for (int i = 0; i < count; i++) {
+			arr[i] = ptr;
+			ptr = ptr->next_;
+		}
+		return Arr(arr, count);
 	}
 
 	void emplace_front(_Ty& i) {
