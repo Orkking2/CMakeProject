@@ -26,6 +26,12 @@ class _Linked_list {
 private:
 	using Item = _Linked_item<_Ty>;
 
+	struct Arr {
+		Arr(_Ty* arr, int count) : arr(arr), count(count) {}
+		_Ty* arr;
+		int count;
+	};
+
 	Item* first_item_;
 	Item* last_item_;
 public:
@@ -51,6 +57,8 @@ public:
 
 	Item* front_ptr() { link(); return first_item_; }
 	Item* back_ptr () { link(); return last_item_;  }
+
+	Arr
 
 	void emplace_front(_Ty& i) {
 		if (!first_item_) { first_item_ = new_plus_assert(i, NULL, NULL); link(); }
