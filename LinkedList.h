@@ -5,7 +5,7 @@
 #include <cstdarg>
 #include <memory>
 
-constexpr int null = 0;
+static constexpr int null = 0;
 
 template <typename _Ty>
 class _Linked_item {
