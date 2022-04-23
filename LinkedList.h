@@ -28,7 +28,21 @@ struct _Array_with_count {
 			delete cashe;
 		}
 	}
+#ifdef _IOSTREAM_
+	template <typename _Ty>
+	friend std::ostream& operator << (std::ostream& os, const _Array_with_count<_Ty>& arr);
 };
+
+template <typename _Ty>
+std::ostream& operator << (std::ostream& os, const _Array_with_count<_Ty>& arr) {
+	for (int i = 0; i < arr.count; i++) {
+		os << arr.arr[i] << ", ";
+	}
+	return os;
+}
+#else // #ifndef _IOSTREAM_
+};
+#endif // ifdef _IOSTREAM_
 
 template <typename _Ty>
 class _Linked_list {
@@ -41,10 +55,7 @@ private:
 public:
 	_Linked_list()                       : first_item_(NULL),                           last_item_(NULL) {}
 	_Linked_list(_Ty i)                  : first_item_(new_plus_assert(i, NULL, NULL)), last_item_(NULL) {}
-	_Linked_list(_Linked_list& l)        : first_item_(NULL),                           last_item_(NULL) {
-		Arr arr = l.get_array();
-		push_array_back(arr.arr, arr.arr[arr.count]);
-	}
+	_Linked_list(_Linked_list& l)        : first_item_(NULL),                           last_item_(NULL) { set_to_arr(l.get_array()); }
 	_Linked_list(_Ty end, _Ty item, ...) : first_item_(NULL),                           last_item_(NULL) {
 		std::va_list list;
 		va_start(list, item);
@@ -52,15 +63,7 @@ public:
 		link();
 		va_end(list);
 	}
-	~_Linked_list() {
-		link();
-		while (first_item_) {
-			Item* cashe = first_item_;
-			first_item_ = first_item_->next_;
-			delete cashe;
-		}
-		if (last_item_) delete last_item_;
-	}
+	~_Linked_list() { destruct(); }
 
 	Item* front_ptr() { link(); return first_item_; }
 	Item* back_ptr () { link(); return last_item_;  }
@@ -72,37 +75,38 @@ public:
 		Item* ptr = first_item_;
 		_Ty* arr = new _Ty[count];
 		for (int i = 0; i < count; i++) {
-			arr[i] = ptr;
+			arr[i] = ptr->val_;
 			ptr = ptr->next_;
 		}
 		return Arr(arr, count);
 	}
+	void set_to_arr(Arr arr) { destruct(); push_array_back(arr.arr, arr.arr[arr.count - 1]); }
 
 	void emplace_front(_Ty& i) {
 		if (!first_item_) { first_item_ = new_plus_assert(i, NULL, NULL); link(); }
 		else {
 			first_item_->prev_ = new_plus_assert(i, first_item_, NULL);
 			first_item_ = first_item_->prev_;
-		}
+		} link();
 	}
 	void emplace_back(_Ty& i) {
 		if (!last_item_) { last_item_ = new_plus_assert(i, NULL, NULL); link(); }
 		else {
 			last_item_->next_ = new_plus_assert(i, NULL, last_item_);
 			last_item_ = last_item_->next_;
-		}
+		} link();
 	}
 	inline void push_front(_Ty i) { emplace_front(i); }
 	inline void push_back (_Ty i) { emplace_back (i); }
 
-	inline void emplace_array_front(_Ty* arr, _Ty* end) { for (_Ty* i = arr;  i != end; i++) emplace_front   (*i ); }
-	inline void emplace_array_back (_Ty* arr, _Ty* end) { for (_Ty* i = arr;  i != end; i++) emplace_back    (*i ); }
-	inline void push_array_front   (_Ty* arr, _Ty* end) { for (_Ty* i = arr;  i != end; i++) push_front      (*i ); }
-	inline void push_array_back    (_Ty* arr, _Ty* end) { for (_Ty* i = arr;  i != end; i++) push_back       (*i ); }
-	inline void emplace_array_front(_Ty* arr, _Ty  end) { for (_Ty* i = arr; *i != end; i++) emplace_front   (*i ); }
-	inline void emplace_array_back (_Ty* arr, _Ty  end) { for (_Ty* i = arr; *i != end; i++) emplace_back    (*i ); }
-	inline void push_array_front   (_Ty* arr, _Ty  end) { for (_Ty* i = arr; *i != end; i++) push_front      (*i ); }
-	inline void push_array_back    (_Ty* arr, _Ty  end) { for (_Ty* i = arr; *i != end; i++) push_back       (*i ); }
+	inline void emplace_array_front(_Ty* arr, _Ty* end) { for (_Ty* i = arr;  i != end; i++) emplace_front(*i); }
+	inline void emplace_array_back (_Ty* arr, _Ty* end) { for (_Ty* i = arr;  i != end; i++) emplace_back (*i); }
+	inline void push_array_front   (_Ty* arr, _Ty* end) { for (_Ty* i = arr;  i != end; i++) push_front   (*i); }
+	inline void push_array_back    (_Ty* arr, _Ty* end) { for (_Ty* i = arr;  i != end; i++) push_back    (*i); }
+	inline void emplace_array_front(_Ty* arr, _Ty  end) { for (_Ty* i = arr; *i != end; i++) emplace_front(*i); }
+	inline void emplace_array_back (_Ty* arr, _Ty  end) { for (_Ty* i = arr; *i != end; i++) emplace_back (*i); }
+	inline void push_array_front   (_Ty* arr, _Ty  end) { for (_Ty* i = arr; *i != end; i++) push_front   (*i); }
+	inline void push_array_back    (_Ty* arr, _Ty  end) { for (_Ty* i = arr; *i != end; i++) push_back    (*i); }
 	/*
 	inline void emplace_array_front(_Ty* arr, int  len) { for (int  i = 0;    i  < len; i++) emplace_front(arr[i]); }
 	inline void emplace_array_back (_Ty* arr, int  len) { for (int  i = 0;    i  < len; i++) emplace_back (arr[i]); }
@@ -165,5 +169,15 @@ private:
 		else if ( last_item_  && !last_item_ ->prev_ &&  first_item_) { Item* ptr   = find_last (); last_item_ ->prev_ = ptr; ptr->next_ = last_item_;  }
 		else if ( first_item_ &&  first_item_->next_ && !last_item_ ) { last_item_  = find_last (); }
 		else if ( last_item_  &&  last_item_ ->prev_ && !first_item_) { first_item_ = find_first(); }
+	}
+
+	void destruct() {
+		link();
+		while (first_item_) {
+			Item* cashe = first_item_;
+			first_item_ = first_item_->next_;
+			delete cashe;
+		}
+		if (last_item_) delete last_item_;
 	}
 };
