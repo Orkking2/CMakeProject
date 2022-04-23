@@ -40,7 +40,7 @@ std::ostream& operator << (std::ostream& os, const _Array_with_count<_Ty>& arr) 
 	}
 	return os;
 }
-#else // #ifndef _IOSTREAM_
+#else // #ifndef _IOSTREAM_ 
 };
 #endif // ifdef _IOSTREAM_
 
@@ -56,7 +56,7 @@ public:
 	_Linked_list()                       : first_item_(NULL),                           last_item_(NULL) {}
 	_Linked_list(_Ty i)                  : first_item_(new_plus_assert(i, NULL, NULL)), last_item_(NULL) {}
 	_Linked_list(_Linked_list& l)        : first_item_(NULL),                           last_item_(NULL) { set_to_arr(l.get_array()); }
-	_Linked_list(_Ty end, _Ty item, ...) : first_item_(NULL),                           last_item_(NULL) {
+	_Linked_list(_Ty end, _Ty item, ...) : first_item_(NULL),  /* elipses are Susge */  last_item_(NULL) {
 		std::va_list list;
 		va_start(list, item);
 		for (_Ty i = item; i != end; i = va_arg(list, _Ty)) push_back(i);
