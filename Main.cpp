@@ -8,5 +8,6 @@ int main()
 	char* string = "string";
 	l.push_array_back(string, '\0');
 	std::cout << l.get_array() << "\n";
+	l.pop_back();
 	std::system("pause");
 }

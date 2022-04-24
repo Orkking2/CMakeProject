@@ -62,7 +62,7 @@ public:
 	}
 #endif // ifdef _CSTDARG_
 	~_Linked_list() { 
-	//	destruct(); 
+		destruct(); 
 	}
 
 	Item* front_ptr() { link(); return first_item_; }
@@ -106,28 +106,44 @@ public:
 	inline void emplace_array_back (_Ty* arr, _Ty  end) { for (_Ty* i = arr; *i != end; i++) emplace_back (*i); }
 	inline void push_array_front   (_Ty* arr, _Ty  end) { for (_Ty* i = arr; *i != end; i++) push_front   (*i); }
 	inline void push_array_back    (_Ty* arr, _Ty  end) { for (_Ty* i = arr; *i != end; i++) push_back    (*i); }
-#ifdef _LINKED_LIST_IS_NOT_INT_
+#ifdef _LINKED_LIST_IS_NOT_USED_AS_INT_
 	inline void emplace_array_front(_Ty* arr, int  len) { for (int  i = 0;    i  < len; i++) emplace_front(arr[i]); }
 	inline void emplace_array_back (_Ty* arr, int  len) { for (int  i = 0;    i  < len; i++) emplace_back (arr[i]); }
 	inline void push_array_front   (_Ty* arr, int  len) { for (int  i = 0;    i  < len; i++) push_front   (arr[i]); }
 	inline void push_array_back    (_Ty* arr, int  len) { for (int  i = 0;    i  < len; i++) push_back    (arr[i]); }
 #endif // _LINKED_LIST_IS_NOT_INT_
 
-	_Ty front()     { apl(); return first_item_->val_; }
-	_Ty pop_front() { apl();
-		Item* cashe = first_item_;
-		first_item_ = first_item_->next_;
-		_Ty out = cashe->val_;
-		delete cashe;
-		return out;
+	_Ty front() { 
+		apl(); 
+		if(first_item_) return first_item_->val_; 
+		else return back(); 
 	}
-	_Ty back()     { apl(); return last_item_->val_; }
-	_Ty pop_back() { apl();
-		Item* cashe = last_item_;
-		last_item_ = last_item_->prev_;
-		_Ty out = cashe->val_;
-		delete cashe;
-		return out;
+	_Ty pop_front() { 
+		apl();
+		if (first_item_) {
+			_Ty cashe = first_item_->val_;
+			first_item_ = first_item_->next_;
+			delete first_item_->prev_;
+			first_item_->prev_ = NULL;
+			return cashe;
+		}
+		else return pop_back();
+	}
+	_Ty back() { 
+		apl(); 
+		if (last_item_) return last_item_->val_;
+		else return front();
+	}
+	_Ty pop_back() { 
+		apl();
+		if (last_item_) {
+			_Ty cashe = last_item_->val_;
+			last_item_ = last_item_->prev_;
+			delete last_item_->next_;
+			last_item_->next_ = NULL;
+			return cashe;
+		}
+		else return pop_front();
 	}
 	void operator = (const _Linked_list& d) {
 		destruct();
@@ -155,11 +171,20 @@ private:
 	void destruct() {
 		link();
 		while (first_item_) {
-			Item* cashe = first_item_;
-			first_item_ = first_item_->next_;
-			delete cashe;
+			if (first_item_->next_) {
+				first_item_ = first_item_->next_;
+				delete first_item_->prev_;
+				first_item_->prev_ = NULL;
+			}
+			else { 
+				delete first_item_; 
+				first_item_ = NULL; 
+			}
 		}
-		if (last_item_) delete last_item_;
+		if (last_item_) {
+			delete last_item_;
+			last_item_ = NULL;
+		}
 	}
 };
 #endif // ifndef _LINKEDLIST_
