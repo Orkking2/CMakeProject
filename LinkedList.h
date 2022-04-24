@@ -48,8 +48,8 @@ private:
 	using Array = _Array_with_count<_Ty>;
 	using Item  = _Linked_item<_Ty>;
 
-	Item* first_item_;
-	Item* last_item_;
+	Item* first_item_ = NULL;
+	Item* last_item_ = NULL;
 public:
 	_Linked_list()                       : first_item_(NULL),               last_item_(NULL) {}
 	_Linked_list(_Ty i)                  : first_item_(npa(i, NULL, NULL)), last_item_(NULL) {}
@@ -63,7 +63,7 @@ public:
 		va_end(list);
 	}
 #endif // ifdef _CSTDARG_
-	~_Linked_list() { /*destruct();*/ }
+	~_Linked_list() { destruct(); }
 
 	Item* front_ptr() { link(); return first_item_; }
 	Item* back_ptr () { link(); return last_item_;  }
@@ -85,15 +85,15 @@ public:
 		if (!first_item_) { first_item_ = npa(i); link(); }
 		else {
 			first_item_->prev_ = npa(i, first_item_, NULL);
-			first_item_ = first_item_->prev_;
-		} link();
+			first_item_ = first_item_->prev_; link();
+		}
 	}
 	void emplace_back(_Ty& i) {
 		if (!last_item_) { last_item_ = npa(i); link(); }
 		else {
 			last_item_->next_ = npa(i, NULL, last_item_);
-			last_item_ = last_item_->next_;
-		} link();
+			last_item_ = last_item_->next_; link();
+		}
 	}
 	inline void push_front(_Ty i) { emplace_front(i); }
 	inline void push_back (_Ty i) { emplace_back (i); }
