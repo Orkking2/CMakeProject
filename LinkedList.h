@@ -117,28 +117,16 @@ public:
 	inline void push_array_back    (_Ty* arr, int  len) { for (int  i = 0;    i  < len; i++) push_back    (arr[i]); }
 	*/
 
-	_Ty front() {
-		assert(not_null());
-		link();
-		return first_item_->val_;
-	}
-	_Ty pop_front() {
-		assert(not_null());
-		link();
+	_Ty front()     { apl(); return first_item_->val_; }
+	_Ty pop_front() { apl();
 		Item* cashe = first_item_;
 		first_item_ = first_item_->next_;
 		_Ty out = cashe->val_;
 		delete cashe;
 		return out;
 	}
-	_Ty back() {
-		assert(not_null());
-		link();
-		return last_item_->val_;
-	}
-	_Ty pop_back() {
-		assert(not_null());
-		link();
+	_Ty back()     { apl(); return last_item_->val_; }
+	_Ty pop_back() { apl();
 		Item* cashe = last_item_;
 		last_item_ = last_item_->prev_;
 		_Ty out = cashe->val_;
@@ -146,13 +134,7 @@ public:
 		return out;
 	}
 	void operator = (const _Linked_list& d) {
-		link();
-		while (first_item_) {
-			Item* cashe = first_item_;
-			first_item_ = first_item_->next_;
-			delete cashe;
-		}
-		if (last_item_) delete last_item_;
+		destruct();
 		for (Item* i = d.back_ptr(); i; i = i->prev_) emplace_back(*i);
 	}
 private:
@@ -161,7 +143,8 @@ private:
 		assert(ptr);
 		return ptr;
 	}
-	bool not_null()    { if (!first_item_ && !last_item_) return false; return true; }
+	inline bool not_null() { return (first_item_ || last_item_) }
+	void apl() { assert(not_null()); link(); }
 
 	Item* find_first() { Item* out; for (Item* ptr = last_item_;  ptr; ptr = ptr->prev_) out = ptr; return out; }
 	Item* find_last () { Item* out; for (Item* ptr = first_item_; ptr; ptr = ptr->next_) out = ptr; return out; }
