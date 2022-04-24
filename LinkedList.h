@@ -33,9 +33,7 @@ struct _Array_with_count {
 
 template <typename _Ty>
 std::ostream& operator << (std::ostream& os, const _Array_with_count<_Ty>& arr) {
-	for (int i = 0; i < arr.count; i++) {
-		os << arr.arr[i] << ", ";
-	}
+	for (int i = 0; i < arr.count; i++) os << arr.arr[i] << ", ";
 	return os;
 }
 #else
@@ -63,7 +61,9 @@ public:
 		va_end(list);
 	}
 #endif // ifdef _CSTDARG_
-	~_Linked_list() { destruct(); }
+	~_Linked_list() { 
+	//	destruct(); 
+	}
 
 	Item* front_ptr() { link(); return first_item_; }
 	Item* back_ptr () { link(); return last_item_;  }
