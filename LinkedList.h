@@ -1,7 +1,8 @@
 #pragma once
+#ifndef _LINKEDLIST_
+#define _LINKEDLIST_
 
 #include <assert.h>
-#include <cstdarg>
 #include <memory>
 
 #ifndef NULL
@@ -31,7 +32,7 @@ struct _Array_with_count {
 #ifdef _IOSTREAM_
 	template <typename _Ty>
 	friend std::ostream& operator << (std::ostream& os, const _Array_with_count<_Ty>& arr);
-};
+}; // _Array_with_count
 
 template <typename _Ty>
 std::ostream& operator << (std::ostream& os, const _Array_with_count<_Ty>& arr) {
@@ -40,8 +41,8 @@ std::ostream& operator << (std::ostream& os, const _Array_with_count<_Ty>& arr) 
 	}
 	return os;
 }
-#else // #ifndef _IOSTREAM_ 
-};
+#else
+}; // _Array_with_count
 #endif // ifdef _IOSTREAM_
 
 template <typename _Ty>
@@ -56,13 +57,15 @@ public:
 	_Linked_list()                       : first_item_(NULL),                           last_item_(NULL) {}
 	_Linked_list(_Ty i)                  : first_item_(new_plus_assert(i, NULL, NULL)), last_item_(NULL) {}
 	_Linked_list(_Linked_list& l)        : first_item_(NULL),                           last_item_(NULL) { set_to_arr(l.get_array()); }
-	_Linked_list(_Ty end, _Ty item, ...) : first_item_(NULL),  /* elipses are Susge */  last_item_(NULL) {
+#ifdef _CSTDARG_ // Elipses are susge
+	_Linked_list(_Ty end, _Ty item, ...) : first_item_(NULL),                           last_item_(NULL) {
 		std::va_list list;
 		va_start(list, item);
 		for (_Ty i = item; i != end; i = va_arg(list, _Ty)) push_back(i);
 		link();
 		va_end(list);
 	}
+#endif // ifdef _CSTDARG_
 	~_Linked_list() { destruct(); }
 
 	Item* front_ptr() { link(); return first_item_; }
@@ -181,3 +184,4 @@ private:
 		if (last_item_) delete last_item_;
 	}
 };
+#endif // ifndef _LINKEDLIST_
