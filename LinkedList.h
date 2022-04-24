@@ -2,6 +2,8 @@
 #ifndef _LINKEDLIST_
 #define _LINKEDLIST_
 
+#define _CONST_COUNT_DISPLACE_ 1
+
 #include <assert.h>
 #include <memory>
 
@@ -23,12 +25,7 @@ struct _Array_with_count {
 	_Array_with_count(_Ty* arr, int count) : arr(arr), count(count) {}
 	_Ty* arr;
 	int count;
-	~_Array_with_count() {
-		for (int i = 0; i < count; i++) {
-			_Ty* cashe = arr++;
-			delete cashe;
-		}
-	}
+	~_Array_with_count() { delete[] arr; }
 #ifdef _IOSTREAM_
 	template <typename _Ty>
 	friend std::ostream& operator << (std::ostream& os, const _Array_with_count<_Ty>& arr);
@@ -48,8 +45,8 @@ std::ostream& operator << (std::ostream& os, const _Array_with_count<_Ty>& arr) 
 template <typename _Ty>
 class _Linked_list {
 private:
-	using Arr  = _Array_with_count<_Ty>;
-	using Item = _Linked_item<_Ty>;
+	using Array = _Array_with_count<_Ty>;
+	using Item  = _Linked_item<_Ty>;
 
 	Item* first_item_;
 	Item* last_item_;
@@ -66,12 +63,12 @@ public:
 		va_end(list);
 	}
 #endif // ifdef _CSTDARG_
-	~_Linked_list() { destruct(); }
+	~_Linked_list() { /*destruct();*/ }
 
 	Item* front_ptr() { link(); return first_item_; }
 	Item* back_ptr () { link(); return last_item_;  }
 
-	Arr get_array() { apl();
+	Array get_array() { apl();
 		int count = 0;
 		for (Item* ptr = first_item_; ptr; ptr = ptr->next_) count++;
 		Item* ptr = first_item_;
@@ -80,9 +77,9 @@ public:
 			arr[i] = ptr->val_;
 			ptr = ptr->next_;
 		}
-		return Arr(arr, count);
+		return Array(arr, count);
 	}
-	void set_to_arr(Arr arr) { destruct(); push_array_back(arr.arr, arr.arr[arr.count - 1]); }
+	void set_to_arr(Array arr) { destruct(); push_array_back(arr.arr, arr.arr[arr.count - _CONST_COUNT_DISPLACE_]); }
 
 	void emplace_front(_Ty& i) {
 		if (!first_item_) { first_item_ = npa(i); link(); }
