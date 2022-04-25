@@ -18,6 +18,10 @@ struct _Linked_item {
 	_Ty val_;
 	_Linked_item* next_;
 	_Linked_item* prev_;
+
+	bool operator == (const _Linked_item& i) {
+		return (this->val_ == i.val_ && this->next_ == i.next_ && this->prev_ == i.prev_);
+	}
 };
 
 template <typename _Ty>
