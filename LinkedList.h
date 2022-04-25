@@ -47,7 +47,7 @@ private:
 	using Item  = _Linked_item<_Ty>;
 
 	Item* first_item_ = NULL;
-	Item* last_item_ = NULL;
+	Item* last_item_  = NULL;
 public:
 	_Linked_list()                       : first_item_(NULL),               last_item_(NULL) {}
 	_Linked_list(_Ty i)                  : first_item_(npa(i, NULL, NULL)), last_item_(NULL) {}
@@ -68,7 +68,7 @@ public:
 	Item* front_ptr() { link(); return first_item_; }
 	Item* back_ptr () { link(); return last_item_;  }
 
-	Array get_array() { apl();
+	Array get_array() {
 		int count = 0;
 		for (Item* ptr = first_item_; ptr; ptr = ptr->next_) count++;
 		Item* ptr = first_item_;
@@ -82,18 +82,20 @@ public:
 	void set_to_arr(Array arr) { destruct(); push_array_back(arr.arr, arr.arr[arr.count - _CONST_COUNT_DISPLACE_]); }
 
 	void emplace_front(_Ty& i) {
-		if (!first_item_) { first_item_ = npa(i); link(); }
-		else {
-			first_item_->prev_ = npa(i, first_item_, NULL);
-			first_item_ = first_item_->prev_; link();
-		}
+		Item* cashe = npa(i, first_item_, NULL);
+		if (!last_item_)
+			last_item_ = cashe;
+		else
+			first_item_->prev_ = cashe;
+		first_item_ = cashe;
 	}
 	void emplace_back(_Ty& i) {
-		if (!last_item_) { last_item_ = npa(i); link(); }
-		else {
-			last_item_->next_ = npa(i, NULL, last_item_);
-			last_item_ = last_item_->next_; link();
-		}
+		Item* cashe = npa(i, NULL, last_item_);
+		if (!first_item_)
+			first_item_ = cashe;
+		else
+			last_item_->next_ = cashe;
+		last_item_ = cashe;
 	}
 	inline void push_front(_Ty i) { emplace_front(i); }
 	inline void push_back (_Ty i) { emplace_back (i); }
@@ -113,37 +115,49 @@ public:
 	inline void push_array_back    (_Ty* arr, int  len) { for (int  i = 0;    i  < len; i++) push_back    (arr[i]); }
 #endif // _LINKED_LIST_IS_NOT_INT_
 
-	_Ty front() { 
-		apl(); 
-		if(first_item_) return first_item_->val_; 
-		else return back(); 
+	_Ty get_front() {
+		assert(not_null());
+		return first_item_->val_;
 	}
-	_Ty pop_front() { 
-		apl();
-		if (first_item_) {
-			_Ty cashe = first_item_->val_;
+	void remove_front() {
+		if (first_item_ == last_item_) {
+			last_item_ = NULL;
+			delete first_item_;
+			first_item_ = NULL;
+		}
+		else {
 			first_item_ = first_item_->next_;
 			delete first_item_->prev_;
 			first_item_->prev_ = NULL;
-			return cashe;
 		}
-		else return pop_back();
 	}
-	_Ty back() { 
-		apl(); 
-		if (last_item_) return last_item_->val_;
-		else return front();
+	_Ty pop_front() {
+		assert(not_null());
+		_Ty cashe = first_item_->val_;
+		remove_front();
+		return cashe;
 	}
-	_Ty pop_back() { 
-		apl();
-		if (last_item_) {
-			_Ty cashe = last_item_->val_;
+	_Ty get_back() {
+		assert(not_null());
+		return first_item_->val_;
+	}
+	void remove_back() {
+		if (last_item_ == first_item_) {
+			first_item_ = NULL;
+			delete last_item_;
+			last_item_ = NULL;
+		}
+		else {
 			last_item_ = last_item_->prev_;
 			delete last_item_->next_;
 			last_item_->next_ = NULL;
-			return cashe;
 		}
-		else return pop_front();
+	}
+	_Ty pop_back() {
+		assert(not_null());
+		_Ty cashe = last_item_->val_;
+		remove_back();
+		return cashe;
 	}
 	void operator = (const _Linked_list& d) {
 		destruct();
@@ -155,21 +169,14 @@ private:
 		assert(ptr);
 		return ptr;
 	}
-	void apl() { assert(first_item_ || last_item_); link(); }
+	bool not_null() { return first_item_ || last_item_; }
 
 	Item* find_first() { Item* out; for (Item* ptr = last_item_;  ptr; ptr = ptr->prev_) out = ptr; return out; }
 	Item* find_last () { Item* out; for (Item* ptr = first_item_; ptr; ptr = ptr->next_) out = ptr; return out; }
 
-	void link() {
-		if      (!first_item_ && !last_item_) {}
-		else if ( first_item_ && !first_item_->next_ &&  last_item_ ) { Item* ptr   = find_first(); first_item_->next_ = ptr; ptr->prev_ = first_item_; }
-		else if ( last_item_  && !last_item_ ->prev_ &&  first_item_) { Item* ptr   = find_last (); last_item_ ->prev_ = ptr; ptr->next_ = last_item_;  }
-		else if ( first_item_ &&  first_item_->next_ && !last_item_ ) { last_item_  = find_last (); }
-		else if ( last_item_  &&  last_item_ ->prev_ && !first_item_) { first_item_ = find_first(); }
-	}
-
+public:
 	void destruct() {
-		link();
+		last_item_ = NULL;
 		while (first_item_) {
 			if (first_item_->next_) {
 				first_item_ = first_item_->next_;
@@ -180,10 +187,6 @@ private:
 				delete first_item_; 
 				first_item_ = NULL; 
 			}
-		}
-		if (last_item_) {
-			delete last_item_;
-			last_item_ = NULL;
 		}
 	}
 };
