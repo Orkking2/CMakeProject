@@ -6,12 +6,13 @@
 
 class Maze {
 public:
-	maze() {
+	maze(int* dim) : dim_(dim) {
 
 	}
 
 private:
-	bool* maze_;
+	int* dim_;
+	bool* bool_list_;
 };
 
 class player {
