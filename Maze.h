@@ -4,26 +4,23 @@
 
 #include //
 
-struct tile {
-	tile(bool on) : on(on) {}
-	bool on;
-};
-
-class maze {
+class Maze {
 public:
 	maze() {
 
 	}
+
 private:
-	tile* tile_list_;
+	bool* maze_;
 };
 
 class player {
 public:
-	player(int pos = 0) : pos(pos) {}
+	player(int pos = 0, Maze maze) : pos_(pos), maze_(maze) {}
 
 private:
-	int pos;
+	Maze maze_;
+	int pos_;
 };
 
 
