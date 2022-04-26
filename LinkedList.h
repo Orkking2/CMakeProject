@@ -204,6 +204,6 @@ template <typename _Ty>
 std::ostream& operator << (std::ostream& os, const _Linked_list<_Ty>& list) {
 	return (os << list.get_array());
 }
-#endif
+#endif // ifdef _IOSTREAM_
 
 #endif // ifndef _LINKEDLIST_
