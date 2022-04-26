@@ -10,7 +10,6 @@ int main()
 	l.remove_front();
 	l.push_front(' ');
 	std::cout << l.get_array() << "\n";
-	std::system("pause");
 
-	
+	std::system("pause");	
 }

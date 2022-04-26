@@ -69,8 +69,8 @@ public:
 		destruct(); 
 	}
 
-	Item* front_ptr() { link(); return first_item_; }
-	Item* back_ptr () { link(); return last_item_;  }
+	Item* front_ptr() { return first_item_; }
+	Item* back_ptr () { return last_item_;  }
 
 	Array get_array() {
 		int count = 0;
@@ -167,6 +167,10 @@ public:
 		destruct();
 		for (Item* i = d.back_ptr(); i; i = i->prev_) emplace_back(*i);
 	}
+#ifdef _IOSTREAM_
+	template <typename _Ty>
+	friend std::ostream& operator << (std::ostream& os, const _Linked_list<_Ty>& list);
+#endif // ifdef _IOSTREAM_
 private:
 	Item* npa(const _Ty& i, Item* next = NULL, Item* prev = NULL) {
 		Item* ptr = new Item(i, next, prev);
@@ -194,4 +198,12 @@ public:
 		}
 	}
 };
+
+#ifdef _IOSTREAM_
+template <typename _Ty>
+std::ostream& operator << (std::ostream& os, const _Linked_list<_Ty>& list) {
+	return (os << list.get_array());
+}
+#endif
+
 #endif // ifndef _LINKEDLIST_
