@@ -69,6 +69,8 @@ public:
 		destruct(); 
 	}
 
+	bool is_empty() { return !(first_item_ || last_item_); }
+
 	Item* front_ptr() { return first_item_; }
 	Item* back_ptr () { return last_item_;  }
 

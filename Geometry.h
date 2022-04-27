@@ -1,5 +1,8 @@
 #pragma once
 
+#ifndef _GEOMETRY_
+#define _GEOMETRY_
+
 #include "ShuntingYard.h"
 #include <vector>
 #include <iostream>
@@ -176,3 +179,5 @@ std::vector<double> StartSelect();
 inline double slope(double x, double y) {
 	return (pow(x, 2) + pow(y, 2) - 2 * x * y - 3);  // x^2 + y^2 - 2xy - 3
 }
+
+#endif // ifndef _GEOMETRY_
