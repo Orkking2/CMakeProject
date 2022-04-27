@@ -34,12 +34,11 @@ struct Tile {
 
 class Maze {
 private:
-	int* _dim;
 	_Array_with_count<Tile> _tile_arr;
 public:
 	maze(int dim_x, int dim_y, char wall_char = '+', char space_char = ' ', std::string file_name = "Maze.txt") {
 
-		_dim = { dim_x * dim_y, dim_x, dim_y };
+		int* dim = { dim_x * dim_y, dim_x, dim_y };
 
 		std::string courier_str;
 		std::ifstream maze_file(file_name);
@@ -63,7 +62,11 @@ public:
 
 		// Beginning/end logic
 
-
+		for (int i = 0; i < tiles.count; i++) {
+			Tile curr_tile = _tile_arr[i];
+			if (!(i % dim_x)) curr_tile.type = Tile::Type::Border;
+			
+		}
 	}
 	_Linked_list<Tile> get_tiles() {
 		return _tiles;
