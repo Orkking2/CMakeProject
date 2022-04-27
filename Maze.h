@@ -35,18 +35,20 @@ struct Tile {
 class Maze {
 private:
 	int* _dim;
-	_Linked_list<Tile> _tiles;
+	_Array_with_count<Tile> _tile_arr;
 public:
 	maze(int dim_x, int dim_y, char wall_char = '+', char space_char = ' ', std::string file_name = "Maze.txt") {
 
 		_dim = { dim_x * dim_y, dim_x, dim_y };
 
 		std::string courier_str;
-
 		std::ifstream maze_file(file_name);
+
 		if (maze_file.is_open()) maze_file >> courier_str;
 		else std::cout << "Failed to open file: " << file_name << "\n";
-		
+
+		_Linked_list<Tile> tiles;
+
 		for (char c : courier_str) {
 			Tile::Type t;
 			switch (c) {
@@ -55,10 +57,11 @@ public:
 			case '\n':       t = Tile::Type::NewLine;
 			default:         t = Tile::Type::Unknown;
 			}
-			_tiles.push_back(Tile(t, c));
+			tiles.push_back(Tile(t, c));
 		}
+		_tile_arr = tiles.get_array();
 
-		// Start/exit logic
+		// Beginning/end logic
 
 
 	}
