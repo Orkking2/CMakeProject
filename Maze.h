@@ -19,6 +19,7 @@ struct Tile {
 	enum Type {
 		Wall,
 		Space,
+		Border,
 		Beginning,
 		End,
 		NewLine,
@@ -56,6 +57,10 @@ public:
 			}
 			_tiles.push_back(Tile(t, c));
 		}
+
+		// Start/exit logic
+
+
 	}
 	_Linked_list<Tile> get_tiles() {
 		return _tiles;
