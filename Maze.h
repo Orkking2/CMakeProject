@@ -40,7 +40,7 @@ class Maze {
 private:
 	_Array_with_count<Tile> _tile_arr;
 public:
-	Maze(int dim_x, int dim_y, char wall_char = '+', char space_char = ' ', char new_line_char = '\n', std::string file_name = "Maze.txt") {
+	Maze(int dim_x = 0, int dim_y = 0, char wall_char = '+', char space_char = ' ', char new_line_char = '\n', std::string file_name = "Maze.txt") {
 
 		int dim[3] = { dim_x * dim_y, dim_x, dim_y };
 
