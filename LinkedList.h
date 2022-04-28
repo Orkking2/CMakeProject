@@ -36,6 +36,9 @@ struct _Array_with_count {
 		arr = new _Ty[count];
 		for (int i = 0; i < count; i++) arr[i] = array.arr[i];
 	}
+	_Ty& operator [] (const int& i) {
+		return arr[i];
+	}
 #ifdef _IOSTREAM_
 	template <typename _Ty>
 	friend std::ostream& operator << (std::ostream& os, const _Array_with_count<_Ty>& arr);

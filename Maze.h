@@ -8,6 +8,10 @@
 #include <string>
 #include "LinkedList.h"
 
+#ifndef elif
+#define elif(expr) else if (expr)
+#endif
+
 #ifndef _GEOMETRY_
 struct Point {
 	Point(int x = 0, int y = 0) : x(x), y(y) {}
@@ -36,9 +40,9 @@ class Maze {
 private:
 	_Array_with_count<Tile> _tile_arr;
 public:
-	maze(int dim_x, int dim_y, char wall_char = '+', char space_char = ' ', std::string file_name = "Maze.txt") {
+	Maze(int dim_x, int dim_y, char wall_char = '+', char space_char = ' ', char new_line_char = '\n', std::string file_name = "Maze.txt") {
 
-		int* dim = { dim_x * dim_y, dim_x, dim_y };
+		int dim[3] = { dim_x * dim_y, dim_x, dim_y };
 
 		std::string courier_str;
 		std::ifstream maze_file(file_name);
@@ -48,31 +52,29 @@ public:
 
 		_Linked_list<Tile> tiles;
 
+		using TT = Tile::Type;
+
 		for (char c : courier_str) {
 			Tile::Type t;
-			switch (c) {
-			case space_char: t = Tile::Type::Space;
-			case wall_char:  t = Tile::Type::Wall;
-			case '\n':       t = Tile::Type::NewLine;
-			default:         t = Tile::Type::Unknown;
-			}
+			if   (c == new_line_char) t = TT::NewLine;
+			elif (c == space_char)    t = TT::Space;
+			elif (c == wall_char)     t = TT::Wall;
+			else                      t = TT::Unknown;
+
 			tiles.push_back(Tile(t, c));
 		}
 		_tile_arr = tiles.get_array();
 
 		// Beginning/end logic
 
-		for (int i = 0; i < tiles.count; i++) {
+		for (int i = 0; i < _tile_arr.count; i++) {
 			Tile curr_tile = _tile_arr[i];
-			if (!(i % dim_x)) curr_tile.type = Tile::Type::Border;
+			if (curr_tile.type == TT::NewLine) {
+				_tile_arr[i - 1].type = TT::Border;
+				_tile_arr[i + 1].type = TT::Border;
+			}
 			
 		}
-	}
-	_Linked_list<Tile> get_tiles() {
-		return _tiles;
-	}
-	int* get_dim() {
-		return _dim;
 	}
 };
 
