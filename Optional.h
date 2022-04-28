@@ -6,7 +6,7 @@
 
 #if !defined _assert_ && defined _STRING_
 #define _assert_(expr, msg) static_assert(expr, const_cast<char*> (std::string("") + msg + " | ON LINE: " + __LINE__ + " | IN FILE: " + __FILE__ + '\n').c_str())
-#elif !defined _assert_ // ^^^^ defined _STRING / !defined _STRING_ vvvv
+#elif !defined _assert_ // ^^^^ defined _STRING_ / !defined _STRING_ vvvv
 #error #include <string> bozo
 #endif // 
 
