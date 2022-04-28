@@ -26,7 +26,7 @@ class _Optional {
 		obj_ptr = NULL;
 		return cashe;
 	}
-	bool is_set() {
+	inline bool is_set() {
 		return static_cast<bool> (obj_ptr);
 	}
 private:
