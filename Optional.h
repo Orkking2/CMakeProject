@@ -2,13 +2,7 @@
 #ifndef _CUSTOM_OPTIONAL_
 #define _CUSTOM_OPTIONAL_
 
-#include <string>
-
-#if !defined _assert_ && defined _STRING_
-#define _assert_(expr, msg) static_assert(expr, const_cast<char*> (std::string("") + msg + " | ON LINE: " + __LINE__ + " | IN FILE: " + __FILE__ + '\n').c_str())
-#elif !defined _assert_ // ^^^^ defined _STRING_ / !defined _STRING_ vvvv
-#error #include <string> bozo
-#endif // 
+#include "Assert.h"
 
 template <typename _Ty>
 class _Optional {
@@ -17,7 +11,7 @@ public:
 	_Optional(_Ty obj) { set_obj(obj); }
 	~_Optional() { delete obj_ptr; }
 	_Ty get_obj() {
-		_assert_(is_set(), "Optional not set");
+		_ASSERT_(is_set(), "Optional not set");
 		return *obj_ptr;
 	}
 	void set_obj(_Ty obj) {
@@ -26,7 +20,7 @@ public:
 		*obj_ptr = obj;
 	}
 	_Ty pop() {
-		assert(is_set());
+		_ASSERT_(is_set(), "Optional not set");
 		_Ty cashe = *obj_ptr
 		delete obj_ptr;
 		obj_ptr = NULL;

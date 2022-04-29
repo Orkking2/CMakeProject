@@ -6,6 +6,7 @@
 
 #include <assert.h>
 #include <memory>
+#include "ArrayManager.h" 
 
 #ifndef NULL
 #define NULL 0
@@ -23,35 +24,6 @@ struct _Linked_item {
 		return (this->val_ == i.val_ && this->next_ == i.next_ && this->prev_ == i.prev_);
 	}
 };
-
-template <typename _Ty>
-struct _Array_with_count {
-	_Array_with_count(_Ty* arr = NULL, int count = 0) : arr(arr), count(count) {}
-	_Ty* arr;
-	int count;
-	~_Array_with_count() { delete[] arr; }
-	void operator = (const _Array_with_count<_Ty>& array) {
-		delete[] arr;
-		count = array.count;
-		arr = new _Ty[count];
-		for (int i = 0; i < count; i++) arr[i] = array.arr[i];
-	}
-	_Ty& operator [] (const int& i) {
-		return arr[i];
-	}
-#ifdef _IOSTREAM_
-	template <typename _Ty>
-	friend std::ostream& operator << (std::ostream& os, const _Array_with_count<_Ty>& arr);
-#endif // ifdef _IOSTREAM_
-};
-
-#ifdef _IOSTREAM_
-template <typename _Ty>
-std::ostream& operator << (std::ostream& os, const _Array_with_count<_Ty>& arr) {
-	for (int i = 0; i < arr.count; i++) os << arr.arr[i] << ", ";
-	return os;
-}
-#endif // ifdef _IOSTREAM_
 
 template <typename _Ty>
 class _Linked_list {
