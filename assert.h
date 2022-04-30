@@ -5,19 +5,30 @@
 #ifndef _STRING_TERMINATOR_CHAR_
 #define _STRING_TERMINATOR_CHAR_ '\0'
 #endif // ifndef _STRING_TERMINATOR_CHAR_
+#ifndef NULL
+#define NULL 0
+#endif // ifndef NULL
 class _Char_manager {
 private:
 	char* _conts = NULL;
 public:
 	_Char_manager(char* msg) {
-		int len = 0;
-		for (char* curr_ptr = msg; *curr_ptr != _STRING_TERMINATOR_CHAR_; curr_ptr++) len++;
+		int len = get_len(msg);
 		_conts = new char[len + 1];
 		for (int i = 0; i < len; i++) _conts[i] = msg[i];
 		_conts[len + 1] = _STRING_TERMINATOR_CHAR_;
 	}
 	~_Char_manager() {
 		delete[] _conts;
+	}
+	char* c_str() {
+		if (_STRING_TERMINATOR_CHAR_ == '\0') {
+			return _conts;
+		} else {
+			int len = get_len(_conts);
+			_conts[len] = '\0';
+			return _conts;
+		}
 	}
 	char* str() {
 		return _conts;
@@ -32,7 +43,7 @@ public:
 		_conts[msg_len + str_len + 1] = _STRING_TERMINATOR_CHAR_;
 		delete[] cashe_ptr;
 	}
-private:
+private: // [start, terminator)
 	int get_len(char* str, char terminator = _STRING_TERMINATOR_CHAR_) {
 		int len = 0;
 		for (char* curr_ptr = str; *curr_ptr != terminator; curr_ptr++) len++;
