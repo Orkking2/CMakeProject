@@ -1,9 +1,6 @@
 #pragma once
-#ifndef _ASSERT_SKEL_
-#define _ASSERT_SKEL_(expr, msg, cast, cont, getter) static_assert(expr, cast (cont("ERROR: ") + msg + " | ON LINE: " + __LINE__ + " | IN FILE: " + __FILE__ + '\n').getter())
-#endif
 #if !defined _ASSERT_ && defined _STRING_
-#define _ASSERT_(expr, msg) _ASSERT_SKEL_ (expr, msg, const_cast<char*>, std::string, c_str)
+#define _ASSERT_(expr, msg) static_assert(expr, const_cast<char*> (std::string("ERROR: ") + msg + " | ON LINE: " + __LINE__ + " | IN FILE: " + __FILE__ + '\n').c_str())
 #elif !defined _ASSERT_ // ^^^^ defined _STRING_ / !defined _STRING_ vvvv
 #ifndef _STRING_TERMINATOR_CHAR_
 #define _STRING_TERMINATOR_CHAR_ '\0'
@@ -11,53 +8,22 @@
 #ifndef NULL
 #define NULL 0
 #endif // ifndef NULL
-class _Char_manager {
-private:
-	char* _conts;
-	char _terminator;
-public:
-	_Char_manager(char* msg, char terminator = _STRING_TERMINATOR_CHAR_) {
-		_terminator = _terminator;
-		int len = get_len(msg);
-		_conts = new char[len + 1];
-		for (int i = 0; i < len; i++) _conts[i] = msg[i];
-		_conts[len + 1] = _terminator;
-	}
-	~_Char_manager() {
-		delete[] _conts;
-	}
-	char* c_str() {
-		if (_terminator == '\0') {
-			return _conts;
-		} else {
-			int len = get_len(_conts);
-			_conts[len] = '\0';
-			return _conts;
-		}
-	}
-	char* str() {
-		return _conts;
-	}
-	void operator + (char* string) {
-		int str_len = get_len(string);
-		int msg_len = get_len(_conts);
-		char* cashe_ptr = _conts;
-		_conts = new char[str_len + msg_len + 1];
-		for (int i = 0; i < msg_len; i++) _conts[i] = cashe_ptr[i]; 
-		for (int i = 0; i < str_len; i++) _conts[msg_len + i] = string[i];
-		_conts[msg_len + str_len + 1] = _terminator;
-		delete[] cashe_ptr;
-	}
-private: // [str, terminator)
-	int get_len(char* str, char terminator = _STRING_TERMINATOR_CHAR_) {
-		int len = 0;
-		for (char* curr_ptr = str; *curr_ptr != terminator; curr_ptr++) len++;
-		return len;
-	}
-};
+#define _ASSERT_(expr, msg) static_assert(expr, assert_str_constructor("ERROR: ", msg, " | ON LINE: ", __LINE__, " | IN FILE: ", __FILE__, '\n'))
+
+char* assert_str_constructor(char* err, char* msg, int line, char* in_file, char* file, char new_line) {
+	int err_len = get_len(err);
+	int msg_len = get_len(msg);
+	int inf_len = get_len(in_file);
+	int fil_len = get_len(file);
+	
 
 
 
-
+}
+int get_len(char* str) {
+	int out = 0;
+	for (char* curr_ptr = str; *curr_ptr != _STRING_TERMINATOR_CHAR_; curr_ptr++) out++;
+	return out;
+}
 
 #endif // ifndef _ASSERT_
