@@ -2,8 +2,6 @@
 #ifndef _LINKEDLIST_
 #define _LINKEDLIST_
 
-#define _CONST_LIST_COUNT_DISPLACE_ 1
-
 #include <assert.h>
 #include <memory>
 #include "ArrayManager.h" 
@@ -28,15 +26,15 @@ struct _LINKED_OBJECT {
 template <typename _Ty>
 class _LINKED_ARRAY {
 private:
-	using Array = _Array_with_count<_Ty>;
+	using Array = _ARRAY_PLUS_COUNT<_Ty>;
 	using Item  = _LINKED_OBJECT<_Ty>;
 
 	Item* first_item_ = NULL;
 	Item* last_item_  = NULL;
 public:
-	_LINKED_ARRAY()                       : first_item_(NULL),               last_item_(NULL) {}
-	_LINKED_ARRAY(_Ty i)                  : first_item_(npa(i, NULL, NULL)), last_item_(NULL) {}
-	_LINKED_ARRAY(_LINKED_ARRAY& l)        : first_item_(NULL),               last_item_(NULL) { set_to_arr(l.get_array()); }
+	_LINKED_ARRAY()                            : first_item_(NULL),               last_item_(NULL) {}
+	_LINKED_ARRAY(_Ty i)                       : first_item_(npa(i, NULL, NULL)), last_item_(NULL) {}
+	_LINKED_ARRAY(const _LINKED_ARRAY<_Ty>& l) : first_item_(NULL),               last_item_(NULL) { set_to_arr(l.get_array()); }
 #ifdef _CSTDARG_ // Elipses are susge
 	_Linked_list(_Ty end, _Ty item, ...) : first_item_(NULL),               last_item_(NULL) {
 		std::va_list list;
@@ -50,12 +48,12 @@ public:
 		destruct(); 
 	}
 
-	bool is_empty() { return !(first_item_ || last_item_); }
+	bool is_empty() const { return !(first_item_ || last_item_); }
 
-	Item* front_ptr() { return first_item_; }
-	Item* back_ptr () { return last_item_;  }
+	Item* front_ptr() const { return first_item_; }
+	Item* back_ptr () const { return last_item_;  }
 
-	Array get_array() {
+	Array get_array() const {
 		int count = 0;
 		for (Item* ptr = first_item_; ptr; ptr = ptr->next_) count++;
 		Item* ptr = first_item_;
@@ -66,7 +64,12 @@ public:
 		}
 		return Array(arr, count);
 	}
-	void set_to_arr(Array arr) { destruct(); push_array_back(arr.arr, arr.arr[arr.count - _CONST_LIST_COUNT_DISPLACE_]); }
+	void set_to_arr(Array arr) { 
+		destruct();
+		_Ty* array = arr.get_arr();
+		_Ty term = array[arr.get_count() - 1];
+		push_array_back(array, term); 
+	}
 
 	void emplace_front(_Ty& i) {
 		Item* cashe = npa(i, first_item_, NULL);
