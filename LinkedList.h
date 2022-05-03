@@ -2,7 +2,7 @@
 #ifndef _LINKEDLIST_
 #define _LINKEDLIST_
 
-#define _CONST_COUNT_DISPLACE_ 1
+#define _CONST_LIST_COUNT_DISPLACE_ 1
 
 #include <assert.h>
 #include <memory>
@@ -13,30 +13,30 @@
 #endif // ifndef NULL
 
 template <typename _Ty>
-struct _Linked_item {
-	_Linked_item(const _Ty& val, _Linked_item* next, _Linked_item* prev) : val_(val), next_(next), prev_(prev) {}
+struct _LINKED_OBJECT {
+	_LINKED_OBJECT(const _Ty& val, _LINKED_OBJECT* next, _LINKED_OBJECT* prev) : val_(val), next_(next), prev_(prev) {}
 
 	_Ty val_;
-	_Linked_item* next_;
-	_Linked_item* prev_;
+	_LINKED_OBJECT* next_;
+	_LINKED_OBJECT* prev_;
 
-	bool operator == (const _Linked_item& i) {
-		return (this->val_ == i.val_ && this->next_ == i.next_ && this->prev_ == i.prev_);
+	bool operator == (const _LINKED_OBJECT<_Ty>& i) {
+		return (val_ == i.val_ && next_ == i.next_ && prev_ == i.prev_);
 	}
 };
 
 template <typename _Ty>
-class _Linked_list {
+class _LINKED_ARRAY {
 private:
 	using Array = _Array_with_count<_Ty>;
-	using Item  = _Linked_item<_Ty>;
+	using Item  = _LINKED_OBJECT<_Ty>;
 
 	Item* first_item_ = NULL;
 	Item* last_item_  = NULL;
 public:
-	_Linked_list()                       : first_item_(NULL),               last_item_(NULL) {}
-	_Linked_list(_Ty i)                  : first_item_(npa(i, NULL, NULL)), last_item_(NULL) {}
-	_Linked_list(_Linked_list& l)        : first_item_(NULL),               last_item_(NULL) { set_to_arr(l.get_array()); }
+	_LINKED_ARRAY()                       : first_item_(NULL),               last_item_(NULL) {}
+	_LINKED_ARRAY(_Ty i)                  : first_item_(npa(i, NULL, NULL)), last_item_(NULL) {}
+	_LINKED_ARRAY(_LINKED_ARRAY& l)        : first_item_(NULL),               last_item_(NULL) { set_to_arr(l.get_array()); }
 #ifdef _CSTDARG_ // Elipses are susge
 	_Linked_list(_Ty end, _Ty item, ...) : first_item_(NULL),               last_item_(NULL) {
 		std::va_list list;
@@ -46,7 +46,7 @@ public:
 		va_end(list);
 	}
 #endif // ifdef _CSTDARG_
-	~_Linked_list() { 
+	~_LINKED_ARRAY() { 
 		destruct(); 
 	}
 
@@ -66,7 +66,7 @@ public:
 		}
 		return Array(arr, count);
 	}
-	void set_to_arr(Array arr) { destruct(); push_array_back(arr.arr, arr.arr[arr.count - _CONST_COUNT_DISPLACE_]); }
+	void set_to_arr(Array arr) { destruct(); push_array_back(arr.arr, arr.arr[arr.count - _CONST_LIST_COUNT_DISPLACE_]); }
 
 	void emplace_front(_Ty& i) {
 		Item* cashe = npa(i, first_item_, NULL);
@@ -146,7 +146,7 @@ public:
 		remove_back();
 		return cashe;
 	}
-	void operator = (const _Linked_list& d) {
+	void operator = (const _LINKED_ARRAY& d) {
 		destruct();
 		for (Item* i = d.back_ptr(); i; i = i->prev_) emplace_back(*i);
 	}

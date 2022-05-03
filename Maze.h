@@ -50,7 +50,7 @@ public:
 		if (maze_file.is_open()) maze_file >> courier_str;
 		else std::cout << "Failed to open file: " << file_name << "\n";
 
-		_Linked_list<Tile> tiles;
+		_LINKED_ARRAY<Tile> tiles;
 
 		using TT = Tile::Type;
 
@@ -89,7 +89,7 @@ public:
 
 class Display {
 private:
-	_Linked_list<Player> _players;
+	_LINKED_ARRAY<Player> _players;
 public:
 	Display(){}
 };
