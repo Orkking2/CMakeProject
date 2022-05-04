@@ -48,10 +48,16 @@ public:
 		destruct(); 
 	}
 
-	bool is_empty() const { return !(first_item_ || last_item_); }
+	bool is_empty() const { 
+		return !(first_item_ || last_item_); 
+	}
 
-	Item* front_ptr() const { return first_item_; }
-	Item* back_ptr () const { return last_item_;  }
+	Item* front_ptr() const { 
+		return first_item_; 
+	}
+	Item* back_ptr () const { 
+		return last_item_;  
+	}
 
 	Array get_array() const {
 		int count = 0;
