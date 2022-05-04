@@ -2,35 +2,37 @@
 #ifndef _CUSTOM_OPTIONAL_
 #define _CUSTOM_OPTIONAL_
 
+#define _OPTIONAL_NOT_SET "Trying to access unset optional"
+
 #include "Assert.h"
 
 template <typename _Ty>
 class _Optional {
 public:
-	_Optional() : obj_ptr(NULL) {}
+	_Optional() : _obj_ptr(NULL) {}
 	_Optional(_Ty obj) { set_obj(obj); }
-	~_Optional() { delete obj_ptr; }
+	~_Optional() { delete _obj_ptr; }
 	_Ty get_obj() {
-		_ASSERT_(is_set(), "Optional not set");
-		return *obj_ptr;
+		_ASSERT(is_set(), _OPTIONAL_NOT_SET);
+		return *_obj_ptr;
 	}
 	void set_obj(_Ty obj) {
-		if (obj_ptr) delete obj_ptr;
-		obj_ptr = new _Ty;
-		*obj_ptr = obj;
+		if (_obj_ptr) delete _obj_ptr;
+		_obj_ptr = new _Ty;
+		*_obj_ptr = obj;
 	}
 	_Ty pop() {
-		_ASSERT_(is_set(), "Optional not set");
-		_Ty cashe = *obj_ptr
+		_ASSERT(is_set(), _OPTIONAL_NOT_SET);
+		_Ty cashe = *_obj_ptr
 		delete obj_ptr;
-		obj_ptr = NULL;
+		_obj_ptr = NULL;
 		return cashe;
 	}
 	inline bool is_set() {
-		return static_cast<bool> (obj_ptr);
+		return static_cast<bool> (_obj_ptr);
 	}
 private:
-	_Ty* obj_ptr;
+	_Ty* _obj_ptr;
 };
 
 #endif // ifndef _CUSTOM_OPTIONAL_

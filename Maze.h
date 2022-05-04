@@ -8,9 +8,7 @@
 #include <string>
 #include "LinkedList.h"
 
-#ifndef elif
 #define elif(expr) else if (expr)
-#endif
 
 #ifndef _GEOMETRY_
 struct Point {
@@ -29,16 +27,16 @@ struct Tile {
 		NewLine,
 		Unknown
 	};
-	Tile(Type type, char symbol, bool explored = false) : type(type), symbol(symbol), explored(explored) {}
+	Tile(Type type, char symbol, bool explored = false) : type_(type), symbol_(symbol), explored_(explored) {}
 
-	Type type;
-	char symbol;
-	bool explored;
+	Type type_;
+	char symbol_;
+	bool explored_;
 };
 
 class Maze {
 private:
-	_Array_with_count<Tile> _tile_arr;
+	_ARRAY_PLUS_COUNT<Tile> _tile_arr;
 public:
 	Maze(int dim_x = 0, int dim_y = 0, char wall_char = '+', char space_char = ' ', char new_line_char = '\n', std::string file_name = "Maze.txt") {
 
@@ -67,11 +65,11 @@ public:
 
 		// Beginning/end logic
 
-		for (int i = 0; i < _tile_arr.count; i++) {
+		for (int i = 0; i < _tile_arr.get_count(); i++) {
 			Tile curr_tile = _tile_arr[i];
-			if (curr_tile.type == TT::NewLine) {
-				_tile_arr[i - 1].type = TT::Border;
-				_tile_arr[i + 1].type = TT::Border;
+			if (curr_tile.type_ == TT::NewLine) {
+				_tile_arr[i - 1].type_ = TT::Border;
+				_tile_arr[i + 1].type_ = TT::Border;
 			}
 			
 		}
