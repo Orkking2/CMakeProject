@@ -155,7 +155,7 @@ public:
 	}
 #ifdef _IOSTREAM_
 	template <typename _Ty>
-	friend std::ostream& operator << (std::ostream& os, const _Linked_list<_Ty>& list);
+	friend std::ostream& operator << (std::ostream& os, const _LINKED_ARRAY<_Ty>& list);
 #endif // ifdef _IOSTREAM_
 private:
 	Item* npa(const _Ty& i, Item* next = NULL, Item* prev = NULL) {
@@ -165,8 +165,18 @@ private:
 	}
 	bool not_null() { return first_item_ || last_item_; }
 
-	Item* find_first() { Item* out; for (Item* ptr = last_item_;  ptr; ptr = ptr->prev_) out = ptr; return out; }
-	Item* find_last () { Item* out; for (Item* ptr = first_item_; ptr; ptr = ptr->next_) out = ptr; return out; }
+	Item* find_first() { 
+		Item* out; 
+		for (Item* ptr = last_item_;  ptr; ptr = ptr->prev_) 
+			out = ptr; 
+		return out; 
+	}
+	Item* find_last () { 
+		Item* out; 
+		for (Item* ptr = first_item_; ptr; ptr = ptr->next_) 
+			out = ptr; 
+		return out; 
+	}
 
 public:
 	void destruct() {
