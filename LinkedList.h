@@ -2,14 +2,11 @@
 #ifndef _LINKEDLIST_
 #define _LINKEDLIST_
 
-#include <assert.h>
+#include "Defines.h"
 #include <memory>
 #include "ArrayManager.h" 
 
-#ifndef NULL
-#define NULL 0
-#endif // ifndef NULL
-
+_NSTD_BEGIN
 template <typename _Ty>
 struct _LINKED_OBJECT {
 	_LINKED_OBJECT(const _Ty& val, _LINKED_OBJECT* next, _LINKED_OBJECT* prev) : val_(val), next_(next), prev_(prev) {}
@@ -26,17 +23,17 @@ struct _LINKED_OBJECT {
 template <typename _Ty>
 class _LINKED_ARRAY {
 private:
-	using Array = _ARRAY_PLUS_COUNT<_Ty>;
+	using Array = _NSTD _ARRAY_PLUS_COUNT<_Ty>;
 	using Item  = _LINKED_OBJECT<_Ty>;
 
-	Item* first_item_ = NULL;
-	Item* last_item_  = NULL;
+	Item* first_item_;
+	Item* last_item_;
 public:
 	_LINKED_ARRAY()                            : first_item_(NULL),               last_item_(NULL) {}
 	_LINKED_ARRAY(_Ty i)                       : first_item_(npa(i, NULL, NULL)), last_item_(NULL) {}
 	_LINKED_ARRAY(const _LINKED_ARRAY<_Ty>& l) : first_item_(NULL),               last_item_(NULL) { set_to_arr(l.get_array()); }
 #ifdef _CSTDARG_ // Elipses are susge
-	_Linked_list(_Ty end, _Ty item, ...) : first_item_(NULL),               last_item_(NULL) {
+	_Linked_list(_Ty end, _Ty item, ...)       : first_item_(NULL),               last_item_(NULL) {
 		std::va_list list;
 		va_start(list, item);
 		for (_Ty i = item; i != end; i = va_arg(list, _Ty)) push_back(i);
@@ -197,5 +194,5 @@ std::ostream& operator << (std::ostream& os, const _LINKED_ARRAY<_Ty>& list) {
 	return (os << list.get_array());
 }
 #endif // ifdef _IOSTREAM_
-
+_NSTD_END
 #endif // ifndef _LINKEDLIST_

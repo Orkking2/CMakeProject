@@ -2,9 +2,10 @@
 #ifndef _ARRAY_MANAGEMENT_
 #define _ARRAY_MANAGEMENT_
 
-#include "assert.h"
 #include <assert.h>
+#include "Defines.h"
 
+_NSTD_BEGIN
 template <typename _Ty>
 class _ARRAY_PLUS_COUNT {
 private:
@@ -14,24 +15,30 @@ public:
 	_ARRAY_PLUS_COUNT(_Ty* arr = NULL, int count = 0) : arr_(arr), count_(count) {}
 	~_ARRAY_PLUS_COUNT() { sel_destruct(); }
 	void sel_destruct()  { delete[]  arr_; }
-	_ARRAY_PLUS_COUNT<_Ty>& operator = (const _ARRAY_PLUS_COUNT<_Ty>& arr) {
+	_ARRAY_PLUS_COUNT<_Ty>& operator = (const _ARRAY_PLUS_COUNT& arr) {
 		sel_destruct();
 		count_ = arr.get_count();
 		arr_ = new _Ty[count_];
 		for (int i = 0; i < count_; i++) arr_[i] = arr[i];
 		return *this;
 	}
-	_Ty*& get_arr() const { return arr_; }
+	_Ty*& get_arr() { 
+		return arr_; 
+	}
+
 	void set_to_arr(_Ty* arr, int count) {
 		sel_destruct();
 		count_ = count;
 		arr_ = new _Ty[count];
 		for (int i = 0; i < count; i++) arr_[i] = arr[i];
 	}
-	int get_count() const { return count_; }
+
+	int get_count() const { 
+		return count_; 
+	}
 
 	_Ty& operator [] (const int& i) {
-		_ASSERT_(i < count_, "Attempted to access item outside arr size");
+		assert(i < count_, "Attempted to access item outside arr size");
 		return arr_[i];
 	}
 
@@ -65,6 +72,5 @@ std::ostream& operator << (std::ostream& os, const _ARRAY_PLUS_COUNT<_Ty>& arr) 
 #endif // ifdef _IOSTREAM_
 
 
-
-
+_NSTD_END
 #endif // ifndef _ARRAY_MANAGEMENT_
