@@ -2,14 +2,11 @@
 #ifndef _LINKEDLIST_
 #define _LINKEDLIST_
 
-#include <assert.h>
+#include "Defines.h"
 #include <memory>
 #include "ArrayManager.h" 
 
-#ifndef NULL
-#define NULL 0
-#endif // ifndef NULL
-
+_NSTD_BEGIN
 template <typename _Ty>
 struct _LINKED_OBJECT {
 	_LINKED_OBJECT(const _Ty& val, _LINKED_OBJECT* next, _LINKED_OBJECT* prev) : val_(val), next_(next), prev_(prev) {}
@@ -26,7 +23,7 @@ struct _LINKED_OBJECT {
 template <typename _Ty>
 class _LINKED_ARRAY {
 private:
-	using Array = _ARRAY_PLUS_COUNT<_Ty>;
+	using Array = _NSTD _ARRAY_PLUS_COUNT<_Ty>;
 	using Item  = _LINKED_OBJECT<_Ty>;
 
 	Item* first_item_;
@@ -48,10 +45,16 @@ public:
 		destruct(); 
 	}
 
-	bool is_empty() const { return !(first_item_ || last_item_); }
+	bool is_empty() const { 
+		return !(first_item_ || last_item_); 
+	}
 
-	Item* front_ptr() const { return first_item_; }
-	Item* back_ptr () const { return last_item_;  }
+	Item* front_ptr() const { 
+		return first_item_; 
+	}
+	Item* back_ptr () const { 
+		return last_item_;  
+	}
 
 	Array get_array() const {
 		int count = 0;
@@ -201,5 +204,5 @@ std::ostream& operator << (std::ostream& os, const _LINKED_ARRAY<_Ty>& list) {
 	return (os << list.get_array());
 }
 #endif // ifdef _IOSTREAM_
-
+_NSTD_END
 #endif // ifndef _LINKEDLIST_

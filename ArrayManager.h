@@ -2,8 +2,10 @@
 #ifndef _ARRAY_MANAGEMENT_
 #define _ARRAY_MANAGEMENT_
 
-#include "assert.h"
+#include <assert.h>
+#include "Defines.h"
 
+_NSTD_BEGIN
 template <typename _Ty>
 class _ARRAY_PLUS_COUNT {
 private:
@@ -42,8 +44,8 @@ public:
 	}
 
 	_Ty& operator [] (const int& i) {
-		_ASSERT(i < _count, "Attempted to access item outside _ARRAY_PLUS_COUNT");
-		return _arr[i];
+		assert(i < count_, "Attempted to access item outside arr size");
+		return arr_[i];
 	}
 
 	_ARRAY_PLUS_COUNT& operator + (const _ARRAY_PLUS_COUNT<_Ty>& apc) {
@@ -78,6 +80,5 @@ std::ostream& operator << (std::ostream& os, const _ARRAY_PLUS_COUNT<_Ty>& arr) 
 #endif // ifdef _IOSTREAM_
 
 
-
-
+_NSTD_END
 #endif // ifndef _ARRAY_MANAGEMENT_

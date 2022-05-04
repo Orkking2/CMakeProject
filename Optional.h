@@ -2,10 +2,12 @@
 #ifndef _CUSTOM_OPTIONAL_
 #define _CUSTOM_OPTIONAL_
 
+#include "Defines.h"
 #define _OPTIONAL_NOT_SET "Trying to access unset optional"
 
 #include "Assert.h"
 
+_NSTD_BEGIN
 template <typename _Ty>
 class _Optional {
 public:
@@ -35,4 +37,6 @@ private:
 	_Ty* _obj_ptr;
 };
 
+
+_NSTD_END
 #endif // ifndef _CUSTOM_OPTIONAL_
