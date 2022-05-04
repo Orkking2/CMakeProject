@@ -8,16 +8,34 @@ _NSTD_BEGIN
 template<class _Ty>
 class Copy {
 private:
-	_Ty* val;
+	_Ty* _val;
 public:
 	Copy(_Ty in) {
-		val = new _Ty(in);
+		_val = new _Ty(in);
 	}
 	_Ty get_copy() {
-		return *val;
+		return *_val;
 	}
 	~Copy() {
-		delete val;
+		delete _val;
+	}
+};
+
+template <class _Ty>
+class CopyArr {
+private:
+	_Ty* _arr;
+public:
+	CopyArr(_Ty* arr, int len) {
+		_arr = new _Ty[len];
+		for (int i = 0; i < len; i++)
+			_arr[i] = arr[i];
+	}
+	_Ty*& get_arr() {
+		return _arr;
+	}
+	~CopyArr() {
+		delete[] _arr;
 	}
 };
 

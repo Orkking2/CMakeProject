@@ -168,15 +168,15 @@ private:
 	}
 	bool not_null() { return first_item_ || last_item_; }
 
-	Item* find_first() { 
-		Item* out; 
-		for (Item* ptr = last_item_;  ptr; ptr = ptr->prev_) 
+	LObj* find_first() { 
+		LObj* out; 
+		for (LObj* ptr = last_item_;  ptr; ptr = ptr->prev_) 
 			out = ptr; 
 		return out; 
 	}
-	Item* find_last () { 
-		Item* out; 
-		for (Item* ptr = first_item_; ptr; ptr = ptr->next_) 
+	LObj* find_last () { 
+		LObj* out; 
+		for (LObj* ptr = first_item_; ptr; ptr = ptr->next_) 
 			out = ptr; 
 		return out; 
 	}
