@@ -23,15 +23,15 @@ struct _LINKED_OBJECT {
 template <typename _Ty>
 class _LINKED_ARRAY {
 private:
-	using Array = _NSTD _ARRAY_PLUS_COUNT<_Ty>;
-	using Item  = _LINKED_OBJECT<_Ty>;
+	using NSTDArray = _NSTD _ARRAY_PLUS_COUNT<_Ty>;
+	using LObj      = _LINKED_OBJECT<_Ty>;
 
-	Item* first_item_;
-	Item* last_item_;
+	LObj* first_item_;
+	LObj* last_item_;
 public:
-	_LINKED_ARRAY()                            : first_item_(NULL),               last_item_(NULL) {}
-	_LINKED_ARRAY(_Ty i)                       : first_item_(npa(i, NULL, NULL)), last_item_(NULL) {}
-	_LINKED_ARRAY(const _LINKED_ARRAY<_Ty>& l) : first_item_(NULL),               last_item_(NULL) { set_to_arr(l.get_array()); }
+	_LINKED_ARRAY()                            : first_item_(NULL),   last_item_(NULL) {}
+	_LINKED_ARRAY(_Ty i)                       : first_item_(npa(i)), last_item_(NULL) {}
+	_LINKED_ARRAY(const _LINKED_ARRAY<_Ty>& l) : first_item_(NULL),   last_item_(NULL) { set_to_arr(l.get_array()); }
 #ifdef _CSTDARG_ // Elipses are susge
 	_LINKED_ARRAY(_Ty end, _Ty item, ...) : first_item_(NULL),               last_item_(NULL) {
 		std::va_list list;
@@ -49,25 +49,25 @@ public:
 		return !(first_item_ || last_item_); 
 	}
 
-	Item* front_ptr() const { 
+	LObj* front_ptr() const { 
 		return first_item_; 
 	}
-	Item* back_ptr () const { 
+	LObj* back_ptr () const { 
 		return last_item_;  
 	}
 
-	Array get_array() const {
+	NSTDArray get_array() const {
 		int count = 0;
-		for (Item* ptr = first_item_; ptr; ptr = ptr->next_) count++;
-		Item* ptr = first_item_;
+		for (LObj* ptr = first_item_; ptr; ptr = ptr->next_) count++;
+		LObj* ptr = first_item_;
 		_Ty* arr = new _Ty[count];
 		for (int i = 0; i < count; i++) {
 			arr[i] = ptr->val_;
 			ptr = ptr->next_;
 		}
-		return Array(arr, count);
+		return NSTDArray(arr, count);
 	}
-	void set_to_arr(Array arr) { 
+	void set_to_arr(NSTDArray arr) { 
 		destruct();
 		_Ty* array = arr.get_arr();
 		_Ty term = array[arr.get_count() - 1];
@@ -75,7 +75,7 @@ public:
 	}
 
 	void emplace_front(_Ty& i) {
-		Item* cashe = npa(i, first_item_, NULL);
+		LObj* cashe = npa(i, first_item_, NULL);
 		if (!last_item_)
 			last_item_ = cashe;
 		else
@@ -83,7 +83,7 @@ public:
 		first_item_ = cashe;
 	}
 	void emplace_back(_Ty& i) {
-		Item* cashe = npa(i, NULL, last_item_);
+		LObj* cashe = npa(i, NULL, last_item_);
 		if (!first_item_)
 			first_item_ = cashe;
 		else
@@ -154,15 +154,15 @@ public:
 	}
 	void operator = (const _LINKED_ARRAY& d) {
 		destruct();
-		for (Item* i = d.back_ptr(); i; i = i->prev_) emplace_back(*i);
+		for (LObj* i = d.back_ptr(); i; i = i->prev_) emplace_back(*i);
 	}
 #ifdef _IOSTREAM_
 	template <typename _Ty>
 	friend std::ostream& operator << (std::ostream& os, const _LINKED_ARRAY<_Ty>& list);
 #endif // ifdef _IOSTREAM_
 private:
-	Item* npa(const _Ty& i, Item* next = NULL, Item* prev = NULL) {
-		Item* ptr = new Item(i, next, prev);
+	LObj* npa(const _Ty& i, LObj* next = NULL, LObj* prev = NULL) {
+		LObj* ptr = new LObj(i, next, prev);
 		assert(ptr);
 		return ptr;
 	}
