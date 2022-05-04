@@ -6,7 +6,7 @@
 
 #define _ASSERT(expr, msg) static_assert(expr, const_cast<char*> (std::string("ERROR: ") + msg + " | ON LINE: " + __LINE__ + " | IN FILE: " + __FILE__ + '\n').c_str())
 
-#include <assert.h>
+
 
 
 

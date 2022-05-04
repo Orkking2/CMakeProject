@@ -45,8 +45,10 @@ public:
 		std::string courier_str;
 		std::ifstream maze_file(file_name);
 
-		if (maze_file.is_open()) maze_file >> courier_str;
-		else std::cout << "Failed to open file: " << file_name << "\n";
+		if (maze_file.is_open()) 
+			maze_file >> courier_str;
+		else 
+			std::cout << "Failed to open file: " << file_name << "\n";
 
 		_LINKED_ARRAY<Tile> tiles;
 

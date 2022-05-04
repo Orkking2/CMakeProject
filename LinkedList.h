@@ -29,14 +29,14 @@ private:
 	using Array = _ARRAY_PLUS_COUNT<_Ty>;
 	using Item  = _LINKED_OBJECT<_Ty>;
 
-	Item* first_item_ = NULL;
-	Item* last_item_  = NULL;
+	Item* first_item_;
+	Item* last_item_;
 public:
 	_LINKED_ARRAY()                            : first_item_(NULL),               last_item_(NULL) {}
 	_LINKED_ARRAY(_Ty i)                       : first_item_(npa(i, NULL, NULL)), last_item_(NULL) {}
 	_LINKED_ARRAY(const _LINKED_ARRAY<_Ty>& l) : first_item_(NULL),               last_item_(NULL) { set_to_arr(l.get_array()); }
 #ifdef _CSTDARG_ // Elipses are susge
-	_Linked_list(_Ty end, _Ty item, ...) : first_item_(NULL),               last_item_(NULL) {
+	_LINKED_ARRAY(_Ty end, _Ty item, ...) : first_item_(NULL),               last_item_(NULL) {
 		std::va_list list;
 		va_start(list, item);
 		for (_Ty i = item; i != end; i = va_arg(list, _Ty)) push_back(i);
@@ -187,7 +187,7 @@ public:
 
 #ifdef _IOSTREAM_
 template <typename _Ty>
-std::ostream& operator << (std::ostream& os, const _Linked_list<_Ty>& list) {
+std::ostream& operator << (std::ostream& os, const _LINKED_ARRAY<_Ty>& list) {
 	return (os << list.get_array());
 }
 #endif // ifdef _IOSTREAM_
