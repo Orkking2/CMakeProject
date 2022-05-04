@@ -1,14 +1,7 @@
 #pragma once
 #ifndef _ASSERT_
-#define _ASSERT_
-
-#include <string>
-
-#define _ASSERT(expr, msg) static_assert(expr, const_cast<char*> (std::string("ERROR: ") + msg + " | ON LINE: " + __LINE__ + " | IN FILE: " + __FILE__ + '\n').c_str())
-
-
-
-
-
-
+char* assert_str(char* msg, char* expr, int line, char* file) {
+	
+}
+#define _ASSERT_(expr, msg) static_assert(expr, assert_str(msg, #expr, __LINE__, __FILE__))
 #endif // ifndef _ASSERT_
