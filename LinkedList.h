@@ -193,7 +193,7 @@ public:
 
 #ifdef _IOSTREAM_
 template <typename _Ty>
-std::ostream& operator << (std::ostream& os, const _Linked_list<_Ty>& list) {
+std::ostream& operator << (std::ostream& os, const _LINKED_ARRAY<_Ty>& list) {
 	return (os << list.get_array());
 }
 #endif // ifdef _IOSTREAM_
