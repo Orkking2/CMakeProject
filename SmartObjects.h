@@ -6,35 +6,44 @@
 
 _NSTD_BEGIN
 template<class _Ty>
-class Copy {
+class _S_OBJ {
 private:
 	_Ty* _val;
 public:
-	Copy(_Ty in) {
+	_S_OBJ(_Ty in) {
 		_val = new _Ty(in);
 	}
-	_Ty get_copy() {
+	_Ty get() {
 		return *_val;
 	}
-	~Copy() {
+	~_S_OBJ() {
 		delete _val;
 	}
 };
 
 template <class _Ty>
-class CopyArr {
+class _S_ARR {
 private:
 	_Ty* _arr;
 public:
-	CopyArr(_Ty* arr, int len) {
+	_S_ARR(_Ty* arr, int len) {
 		_arr = new _Ty[len];
 		for (int i = 0; i < len; i++)
 			_arr[i] = arr[i];
 	}
+	_S_ARR(int len) {
+		_arr = new _Ty[len];
+	}
+
 	_Ty*& get_arr() {
 		return _arr;
 	}
-	~CopyArr() {
+	
+	_Ty& operator[] (int i) {
+		return _arr[i];
+	}
+
+	~_S_ARR() {
 		delete[] _arr;
 	}
 };

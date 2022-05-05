@@ -8,7 +8,7 @@
 #define NULL 0
 #endif // ifndef NULL
 
-#include <string>
+#define _NSTD_FOR(len) for (int i = 0; i < len; i++)
 
 #define _NSTD ::nstd::
 #define _NSTD_BEGIN namespace nstd {

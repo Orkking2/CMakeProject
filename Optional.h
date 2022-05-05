@@ -3,7 +3,7 @@
 #define _CUSTOM_OPTIONAL_
 
 #include "Defines.h"
-#include <assert.h>
+#include "assert.h"
 
 #define _OPTIONAL_NOT_SET "Trying to access unset optional"
 
@@ -15,7 +15,7 @@ public:
 	_Optional(_Ty obj) { set_obj(obj); }
 	~_Optional() { delete _obj_ptr; }
 	_Ty get_obj() {
-		assert(is_set());
+		_NSTD_ASSERT(is_set(), _OPTIONAL_NOT_SET);
 		return *_obj_ptr;
 	}
 	void set_obj(_Ty obj) {
@@ -24,7 +24,7 @@ public:
 		*_obj_ptr = obj;
 	}
 	_Ty pop() {
-		assert(is_set());
+		_NSTD_ASSERT(is_set(), _OPTIONAL_NOT_SET);
 		_Ty cashe = *_obj_ptr
 		delete obj_ptr;
 		_obj_ptr = NULL;
