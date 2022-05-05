@@ -1,6 +1,6 @@
 #pragma once
-#ifndef _LINKEDLIST_
-#define _LINKEDLIST_
+#ifndef _NSTD_LINKED_LIST_
+#define _NSTD_LINKED_LIST_
 
 #include "Defines.h"
 #include <memory>
@@ -12,8 +12,7 @@ struct _LINKED_OBJECT {
 	_LINKED_OBJECT(const _Ty& val, _LINKED_OBJECT* next, _LINKED_OBJECT* prev) : val_(val), next_(next), prev_(prev) {}
 
 	_Ty val_;
-	_LINKED_OBJECT* next_;
-	_LINKED_OBJECT* prev_;
+	_LINKED_OBJECT* next_, * prev_;
 
 	bool operator == (const _LINKED_OBJECT<_Ty>& i) {
 		return (val_ == i.val_ && next_ == i.next_ && prev_ == i.prev_);
@@ -23,11 +22,7 @@ struct _LINKED_OBJECT {
 template <typename _Ty>
 class _LINKED_ARRAY {
 private:
-	using NSTDArray = _NSTD _ARRAY_PLUS_COUNT<_Ty>;
-	using LObj      = _LINKED_OBJECT<_Ty>;
-
-	LObj* first_item_;
-	LObj* last_item_;
+	_LINKED_OBJECT<_Ty>* first_item_, * last_item_;
 public:
 	_LINKED_ARRAY()                            : first_item_(NULL),   last_item_(NULL) {}
 	_LINKED_ARRAY(_Ty i)                       : first_item_(npa(i)), last_item_(NULL) {}
@@ -49,33 +44,33 @@ public:
 		return !(first_item_ || last_item_); 
 	}
 
-	LObj* front_ptr() const { 
+	_LINKED_OBJECT<_Ty>* front_ptr() const { 
 		return first_item_; 
 	}
-	LObj* back_ptr () const { 
+	_LINKED_OBJECT<_Ty>* back_ptr () const { 
 		return last_item_;  
 	}
 
-	NSTDArray get_array() const {
+	_NSTD _ARRAY_PLUS_COUNT<_Ty> get_array() const {
 		int count = 0;
-		for (LObj* ptr = first_item_; ptr; ptr = ptr->next_) count++;
-		LObj* ptr = first_item_;
+		for (_LINKED_OBJECT<_Ty>* ptr = first_item_; ptr; ptr = ptr->next_) count++;
+		_LINKED_OBJECT<_Ty>* ptr = first_item_;
 		_Ty* arr = new _Ty[count];
 		for (int i = 0; i < count; i++) {
 			arr[i] = ptr->val_;
 			ptr = ptr->next_;
 		}
-		return NSTDArray(arr, count);
+		return _NSTD _ARRAY_PLUS_COUNT<_Ty>(arr, count);
 	}
-	void set_to_arr(NSTDArray arr) { 
+	void set_to_arr(_NSTD _ARRAY_PLUS_COUNT<_Ty> arr) { 
 		destruct();
 		_Ty* array = arr.get_arr();
-		_Ty term = array[arr.get_count() - 1];
+		_Ty term = array[arr.get_len() - 1];
 		push_array_back(array, term); 
 	}
 
 	void emplace_front(_Ty& i) {
-		LObj* cashe = npa(i, first_item_, NULL);
+		_LINKED_OBJECT<_Ty>* cashe = npa(i, first_item_, NULL);
 		if (!last_item_)
 			last_item_ = cashe;
 		else
@@ -83,7 +78,7 @@ public:
 		first_item_ = cashe;
 	}
 	void emplace_back(_Ty& i) {
-		LObj* cashe = npa(i, NULL, last_item_);
+		_LINKED_OBJECT<_Ty>* cashe = npa(i, NULL, last_item_);
 		if (!first_item_)
 			first_item_ = cashe;
 		else
@@ -154,29 +149,29 @@ public:
 	}
 	void operator = (const _LINKED_ARRAY& d) {
 		destruct();
-		for (LObj* i = d.back_ptr(); i; i = i->prev_) emplace_back(*i);
+		for (_LINKED_OBJECT<_Ty>* i = d.back_ptr(); i; i = i->prev_) emplace_back(*i);
 	}
 #ifdef _IOSTREAM_
 	template <typename _Ty>
 	friend std::ostream& operator << (std::ostream& os, const _LINKED_ARRAY<_Ty>& list);
 #endif // ifdef _IOSTREAM_
 private:
-	LObj* npa(const _Ty& i, LObj* next = NULL, LObj* prev = NULL) {
-		LObj* ptr = new LObj(i, next, prev);
+	_LINKED_OBJECT<_Ty>* npa(const _Ty& i, _LINKED_OBJECT<_Ty>* next = NULL, _LINKED_OBJECT<_Ty>* prev = NULL) {
+		_LINKED_OBJECT<_Ty>* ptr = new _LINKED_OBJECT<_Ty>(i, next, prev);
 		assert(ptr);
 		return ptr;
 	}
 	bool not_null() { return first_item_ || last_item_; }
 
-	LObj* find_first() { 
-		LObj* out; 
-		for (LObj* ptr = last_item_;  ptr; ptr = ptr->prev_) 
+	_LINKED_OBJECT<_Ty>* find_first() { 
+		_LINKED_OBJECT<_Ty>* out; 
+		for (_LINKED_OBJECT<_Ty>* ptr = last_item_;  ptr; ptr = ptr->prev_) 
 			out = ptr; 
 		return out; 
 	}
-	LObj* find_last () { 
-		LObj* out; 
-		for (LObj* ptr = first_item_; ptr; ptr = ptr->next_) 
+	_LINKED_OBJECT<_Ty>* find_last () { 
+		_LINKED_OBJECT<_Ty>* out; 
+		for (_LINKED_OBJECT<_Ty>* ptr = first_item_; ptr; ptr = ptr->next_) 
 			out = ptr; 
 		return out; 
 	}
@@ -205,4 +200,4 @@ std::ostream& operator << (std::ostream& os, const _LINKED_ARRAY<_Ty>& list) {
 }
 #endif // ifdef _IOSTREAM_
 _NSTD_END
-#endif // ifndef _LINKEDLIST_
+#endif // ifndef _NSTD_LINKED_LIST_

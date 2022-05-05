@@ -1,6 +1,6 @@
 #pragma once
-#ifndef _CUSTOM_DEFINES_
-#define _CUSTOM_DEFINES_
+#ifndef _NSTD_DEFINES_
+#define _NSTD_DEFINES_
 
 #define elif(expr) else if (expr)
 
@@ -16,4 +16,4 @@
 
 
 
-#endif // ifndef _CUSTOM_DEFINES_
+#endif // ifndef _NSTD_DEFINES_

@@ -1,6 +1,6 @@
 #pragma once
-#ifndef _ARRAY_MANAGEMENT_
-#define _ARRAY_MANAGEMENT_
+#ifndef _NSTD_ARRAY_MANAGER_
+#define _NSTD_ARRAY_MANAGER_
 
 #include <assert.h>
 #include "Defines.h"
@@ -76,13 +76,13 @@ private:
 #ifdef _IOSTREAM_
 public:
 	template <typename _Ty>
-	friend std::ostream& operator << (std::ostream& os, const _ARRAY_PLUS_len<_Ty>& arr);
+	friend std::ostream& operator << (std::ostream& os, const _ARRAY_PLUS_COUNT<_Ty>& arr);
 #endif // ifdef _IOSTREAM_
 };
 
 #ifdef _IOSTREAM_
 template <typename _Ty>
-std::ostream& operator << (std::ostream& os, const _ARRAY_PLUS_len<_Ty>& arr) {
+std::ostream& operator << (std::ostream& os, const _ARRAY_PLUS_COUNT<_Ty>& arr) {
 	for (int i = 0; i < arr._len; i++) os << arr._arr[i] << ", ";
 	return os;
 }
@@ -90,4 +90,4 @@ std::ostream& operator << (std::ostream& os, const _ARRAY_PLUS_len<_Ty>& arr) {
 
 
 _NSTD_END
-#endif // ifndef _ARRAY_MANAGEMENT_
+#endif // ifndef _ARRAY_MANAGER_

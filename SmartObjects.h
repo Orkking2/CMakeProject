@@ -1,6 +1,6 @@
 #pragma once
-#ifndef _NSTD_COPY_
-#define _NSTD_COPY_
+#ifndef _NSTD_SMART_OBJECTS_
+#define _NSTD_SMART_OBJECTS_
 
 #include "Defines.h"
 
@@ -49,4 +49,4 @@ public:
 };
 
 _NSTD_END
-#endif // ifndef _NSTD_COPY_
+#endif // ifndef _NSTD_SMART_OBJECTS_

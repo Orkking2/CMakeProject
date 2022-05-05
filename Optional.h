@@ -1,6 +1,6 @@
 #pragma once
-#ifndef _CUSTOM_OPTIONAL_
-#define _CUSTOM_OPTIONAL_
+#ifndef _NSTD_OPTIONAL_
+#define _NSTD_OPTIONAL_
 
 #include "Defines.h"
 #include "assert.h"
@@ -38,4 +38,4 @@ private:
 
 
 _NSTD_END
-#endif // ifndef _CUSTOM_OPTIONAL_
+#endif // ifndef _NSTD_OPTIONAL_
