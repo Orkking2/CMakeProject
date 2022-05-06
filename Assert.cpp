@@ -1,6 +1,6 @@
 #include "Assert.h"
 
-_NSTD _NSTD_AHA<char>& assert_str(char* msg, char* expr, int line, char* file) {
+_NSTD _NSTD_AHA<char>& assert_str(const char*& msg, const char*& expr, const int& line, const char*& file) {
 	// Standard assert string components
 	static const char* err = "ERROR: ", * fr = " | FROM: ", * onl = " | ON LINE: ", * inf = " | IN FILE: ";
 	static int err_len = _NSTD c_str_len(err), fr_len = _NSTD c_str_len(fr), onl_len = _NSTD c_str_len(onl), inf_len = _NSTD c_str_len(inf);
@@ -13,9 +13,9 @@ _NSTD _NSTD_AHA<char>& assert_str(char* msg, char* expr, int line, char* file) {
 
 	static const char num_to_str_str[10] = { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9' };
 
-	_NSTD_FOR(line_len) {
-		line_arr[i] = num_to_str_str[line % 10];
-		line /= 10;
+	for (int i = 0, l = line; i < line_len; i++) {
+		line_arr[i] = num_to_str_str[l % 10];
+		l /= 10;
 	}
 	char* c_l = line_arr.get_arr();
 
@@ -29,18 +29,3 @@ _NSTD _NSTD_AHA<char>& assert_str(char* msg, char* expr, int line, char* file) {
 
 	return out;
 }
-
-_NSTD_BEGIN // Helper funcs
-int c_str_len(const char* c_str) {
-	int out = 0;
-	for (char* ptr = const_cast<char*> (c_str); ptr != '\0'; ptr++)
-		out++;
-	return out;
-}
-int int_list_sum(int* arr, int len) {
-	int out = 0;
-	_NSTD_FOR(len)
-		out += arr[i];
-	return out;
-}
-_NSTD_END
