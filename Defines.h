@@ -10,6 +10,9 @@
 
 #define _NSTD_FOR(len) for (int i = 0; i < len; i++)
 
+#define _NSTD_ITSL { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9' }
+
+
 #define _NSTD ::nstd::
 #define _NSTD_BEGIN namespace nstd {
 #define _NSTD_END }

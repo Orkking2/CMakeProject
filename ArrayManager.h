@@ -68,7 +68,7 @@ public:
 private:
 	_Ty*& npa(int count) {
 		_Ty* cashe = new _Ty[count];
-		_ASSERT(cashe, "Out of memory");
+		_NSTD_ASSERT(cashe, "Out of memory");
 		return cashe;
 	}
 
