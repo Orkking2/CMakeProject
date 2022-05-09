@@ -47,8 +47,8 @@ int int_list_sum(int* arr, int len) {
 	return out;
 }
 template <typename _Ty>
-void copy_to_out(_NSTD _AHA<_Ty>& s_arr, const _Ty* arr, const int len, int& cashe = 0) {
-	for (int i = 0; i < len; i++)
+void copy_to_out(_NSTD _AHA<_Ty>& s_arr, const _Ty*& arr, const int& len, int& cashe = 0) {
+	_NSTD_FOR(len)
 		s_arr[cashe + i] = arr[i];
 	cashe += len;
 }
@@ -75,7 +75,7 @@ char*& assert_str(_NSTD _AHA<char> out, const char*& msg, const char*& expr, con
 		file_len = _NSTD c_str_len(file),
 		line_len = _NSTD int_len(line);
 
-	// static_cast<char*> (line); {
+	// static_cast<char*> (line);
 	_NSTD _AHA<char> line_arr(line_len);
 	
 	char num_to_str_str[] = _NSTD_ITSL;
@@ -85,7 +85,6 @@ char*& assert_str(_NSTD _AHA<char> out, const char*& msg, const char*& expr, con
 		l /= 10;
 	}
 	char* c_l = line_arr.get_arr();
-	// }
 
 	const char* str_args[num_args] = { err, msg, fr, expr, onl, c_l, inf, file };
 	const int   args_len[num_args] = { err_len, msg_len, fr_len, expr_len, onl_len, line_len, inf_len, file_len };
@@ -98,5 +97,5 @@ char*& assert_str(_NSTD _AHA<char> out, const char*& msg, const char*& expr, con
 	return out.get_arr();
 }
 // "ERROR: msg | FROM: #expr | ON LINE: __LINE__ | IN FILE: __FILE__ ";
-#define _NSTD_ASSERT(expr, msg) {_NSTD _AHA<char> err_str(); static_assert(!!(expr), assert_str(err_str, msg, #expr, __LINE__, __FILE__)) }
+#define _NSTD_ASSERT(expr, msg) static_assert(!!(expr), assert_str(_NSTD _AHA<char> err_str(), msg, #expr, __LINE__, __FILE__))
 #endif // ifndef _NSTD_ASSERT
