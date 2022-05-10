@@ -6,16 +6,16 @@
 
 _NSTD_BEGIN
 template <typename _Ty>
-class _Optional {
+class optional {
 private:
 	static const char* _not_set_err = "Trying to access unset optional";
 	_Ty* _obj_ptr;
 public:
-	_Optional() : _obj_ptr(NULL) {}
-	_Optional(_Ty obj) { 
+	optional() : _obj_ptr(NULL) {}
+	optional(_Ty obj) { 
 		set(obj); 
 	}
-	~_Optional() { 
+	~optional() { 
 		unset();
 	}
 
