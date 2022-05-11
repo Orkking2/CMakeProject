@@ -3,29 +3,31 @@
 #include "Defines.h"
 
 _NSTD_BEGIN
-template <class _Ty>
-class _AHA {
+class _ASS_STR_MAN {
 private:
-	_Ty* _arr;
+	char* str_;
+	int len_;
 public:
-	_AHA(int len) { 
-		_arr = new _Ty[len]; 
+	_ASS_STR_MAN(int len) {
+		str_ = new char[len];
+		_NSTD_FOR(len)
+			str_[i] = '\0';
 	}
-	~_AHA() { 
-		delete[] _arr;       
-		_arr = NULL;
+	~_ASS_STR_MAN() {
+		delete[] str_;
 	}
-
-	void resize(const int& size) {
-		delete[] _arr;
-		_arr = new _Ty[size];
+	_NODISCARD char*& get() {
+		return str_;
 	}
-
-	_NODISCARD _Ty*& get_arr() { 
-		return _arr;         
+	void set_last(char c) {
+		last() = c;
 	}
-	_NODISCARD _Ty& operator[] (int i) { 
-		return _arr[i];      
+	_NODISCARD char& last() {
+		return str_[len_ - 1];
+	}
+	_NODISCARD char& operator[] (const int& i) {
+		if(i <= len_)
+			return str_[i];
 	}
 };
 int c_str_len(const char*& c_str) {
@@ -40,21 +42,20 @@ int int_len(const int& in) {
 		out++;
 	return out;
 }
-int int_list_sum(int* arr, int len) {
+int int_list_sum(const int*& arr, const int& len) {
 	int out = 0;
 	_NSTD_FOR(len)
 		out += arr[i];
 	return out;
 }
-template <typename _Ty>
-void copy_to_out(_NSTD _AHA<_Ty>& s_arr, const _Ty*& arr, const int& len, int& cashe = 0) {
+void copy_to_out(_NSTD _ASS_STR_MAN s_arr, const char*& arr, const int& len, int& cashe) {
 	_NSTD_FOR(len)
 		s_arr[cashe + i] = arr[i];
 	cashe += len;
 }
 _NSTD_END
 
-_NSTD _AHA<char> assert_str(const char*& msg, const char*& expr, const int& line, const char*& file) {
+_NSTD _ASS_STR_MAN assert_str(const char*& msg, const char*& expr, const int& line, const char*& file) {
 	// NStandard Assert (NSTDA) string components
 	static const char
 		* err = "ERROR: ", 
@@ -76,7 +77,7 @@ _NSTD _AHA<char> assert_str(const char*& msg, const char*& expr, const int& line
 		line_len = _NSTD int_len(line);
 
 	// static_cast<char*> (line);
-	_NSTD _AHA<char> line_arr(line_len);
+	_NSTD _ASS_STR_MAN line_arr(line_len);
 	
 	char num_to_str_str[] = _NSTD_ITSL;
 
@@ -84,18 +85,19 @@ _NSTD _AHA<char> assert_str(const char*& msg, const char*& expr, const int& line
 		line_arr[i] = num_to_str_str[l % 10];
 		l /= 10;
 	}
-	char* c_l = line_arr.get_arr();
+	char* c_l = line_arr.get();
 
 	const char* str_args[num_args] = { err, msg, fr, expr, onl, c_l, inf, file };
 	const int   args_len[num_args] = { err_len, msg_len, fr_len, expr_len, onl_len, line_len, inf_len, file_len };
 
 	int cashe = 0;
-	_NSTD _AHA<char> out(err_len + msg_len + fr_len + expr_len + onl_len + line_len + inf_len + file_len);
+	_NSTD _ASS_STR_MAN out(err_len + msg_len + fr_len + expr_len + onl_len + line_len + inf_len + file_len + 1);
 	_NSTD_FOR(num_args)
 		_NSTD copy_to_out(out, str_args[i], args_len[i], cashe);
+	out.last() = '\0';
 
 	return out;
 }
 // "ERROR: msg | FROM: #expr | ON LINE: __LINE__ | IN FILE: __FILE__ ";
-#define _NSTD_ASSERT(expr, msg) static_assert(!!(expr), assert_str(msg, #expr, __LINE__, __FILE__).get_arr())
+#define _NSTD_ASSERT(expr, msg) static_assert(!!(expr), assert_str(msg, #expr, __LINE__, __FILE__).get())
 #endif // ifndef _NSTD_ASSERT

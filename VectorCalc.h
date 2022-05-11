@@ -28,15 +28,18 @@ struct Point {
 		delete[] arr_;
 	}
 
-	Point& dot_prod(Point p1, Point p2) {
+	_NODISCARD static Point dot_prod(Point p1, Point p2) {
+		Point out;
 		_NSTD_FOR(_NSTD_VC_ND)
-			arr_[i] = p1.arr_[i] * p2.arr_[i];
-		return *this;
+			out.arr_[i] = p1.arr_[i] * p2.arr_[i];
+		return out;
 	}
 
-	Point& cross_prod(Point p1, Point p2) {
-
-		return *this;
+	_NODISCARD static Point cross_prod(Point p1, Point p2) {
+		_NSTD_ASSERT(_NSTD_VC_ND == 3);
+		Point out;
+		
+		return out;
 	}
 
 	
