@@ -21,10 +21,10 @@ public:
 		_arr = new _Ty[size];
 	}
 
-	_Ty*& get_arr() { 
+	_NODISCARD _Ty*& get_arr() { 
 		return _arr;         
 	}
-	_Ty& operator[] (int i) { 
+	_NODISCARD _Ty& operator[] (int i) { 
 		return _arr[i];      
 	}
 };
@@ -54,7 +54,7 @@ void copy_to_out(_NSTD _AHA<_Ty>& s_arr, const _Ty*& arr, const int& len, int& c
 }
 _NSTD_END
 
-char*& assert_str(_NSTD _AHA<char> out, const char*& msg, const char*& expr, const int& line, const char*& file) {
+_NSTD _AHA<char> assert_str(const char*& msg, const char*& expr, const int& line, const char*& file) {
 	// NStandard Assert (NSTDA) string components
 	static const char
 		* err = "ERROR: ", 
@@ -90,12 +90,12 @@ char*& assert_str(_NSTD _AHA<char> out, const char*& msg, const char*& expr, con
 	const int   args_len[num_args] = { err_len, msg_len, fr_len, expr_len, onl_len, line_len, inf_len, file_len };
 
 	int cashe = 0;
-	out.resize(err_len + msg_len + fr_len + expr_len + onl_len + line_len + inf_len + file_len);
+	_NSTD _AHA<char> out(err_len + msg_len + fr_len + expr_len + onl_len + line_len + inf_len + file_len);
 	_NSTD_FOR(num_args)
 		_NSTD copy_to_out(out, str_args[i], args_len[i], cashe);
 
-	return out.get_arr();
+	return out;
 }
 // "ERROR: msg | FROM: #expr | ON LINE: __LINE__ | IN FILE: __FILE__ ";
-#define _NSTD_ASSERT(expr, msg) static_assert(!!(expr), assert_str(_NSTD _AHA<char> err_str(), msg, #expr, __LINE__, __FILE__))
+#define _NSTD_ASSERT(expr, msg) static_assert(!!(expr), assert_str(msg, #expr, __LINE__, __FILE__).get_arr())
 #endif // ifndef _NSTD_ASSERT

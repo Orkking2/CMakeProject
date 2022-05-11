@@ -2,7 +2,7 @@
 #ifndef _NSTD_ARRAY_MANAGER_
 #define _NSTD_ARRAY_MANAGER_
 
-#include "assert.h"
+#include "Assert.h"
 
 _NSTD_BEGIN
 template <typename _Ty>
@@ -36,11 +36,11 @@ public:
 		return *this;
 	}
 	
-	_Ty*& get_arr() const { 
+	_NODISCARD _Ty*& get_arr() const { 
 		return _arr; 
 	}
 		
-	int get_len() const { 
+	_NODISCARD int get_len() const { 
 		return _len; 
 	}
 
@@ -51,7 +51,7 @@ public:
 		for (int i = 0; i < count; i++) _arr[i] = arr[i];
 	}
 
-	_Ty& operator [] (const int& i) {
+	_NODISCARD _Ty& operator [] (const int& i) {
 		_NSTD_ASSERT(i < _len, "Attempted to access item outside arr size");
 		return _arr[i];
 	}

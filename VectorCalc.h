@@ -3,36 +3,51 @@
 #define _NSTD_VECTOR_CALCULUS_
 
 #include "Defines.h"
+#include "ArrayManager.h"
 
 #ifdef _GEOMETRY_
 #pragma message("_NSTD_VECTOR_CALCULUS_ does not function with _GEOMETRY_, please make sure not to include _GEOMETRY_ when working with this file.")
 #else // ^^^^ _GEOMETRY_ / !_GEOMETRY_ vvvv
 
 _NSTD_BEGIN
-#define _NUM_DIMENSIONS_ 3
+#define _NSTD_VC_ND 3
+
 
 struct Point {
-	Point(double x = 0, double y = 0, double z = 0) : x(x), y(y), z(z) {}
-
-	void dot_prod(Point p1, Point p2) {
-		_NSTD_FOR(_NUM_DIMENSIONS_)
-			* mem_arr[i] = (p1.*mem_arr)[i];
+	Point(double* arr = NULL /* Assumed size of _NSTD_VC_ND */) {
+		arr_ = new double[_NSTD_VC_ND];
+		if (arr) {
+			_NSTD_FOR(_NSTD_VC_ND)
+				arr_[i] = arr[i];
+		} else {
+			_NSTD_FOR(_NSTD_VC_ND)
+				arr_[i] = 0;
+		}
+	}
+	~Point() {
+		delete[] arr_;
 	}
 
-	void cross_prod(Point p1, Point p2) {
-
+	Point& dot_prod(Point p1, Point p2) {
+		_NSTD_FOR(_NSTD_VC_ND)
+			arr_[i] = p1.arr_[i] * p2.arr_[i];
+		return *this;
 	}
 
-	double (Point::* mem_arr)[] = {&Point::x, &Point::y, &Point::z};
-	double x, y, z;
+	Point& cross_prod(Point p1, Point p2) {
+
+		return *this;
+	}
+
+	
+	double* arr_; // Size _NSTD_VC_ND
 };
 
 struct Vector {
-	Vector(Point origin = Point, double i = 0, double j = 0, double k = 0) : origin_(origin), i(i), j(j), k(k) {}
+	Vector(Point origin = Point(), Point vector = Point()) : origin_(origin), vect_(vector) {}
 
 
-	Point origin_;
-	double i, j, k; // i hat, j hat, k hat
+	Point origin_, vect_;
 };
 
 
