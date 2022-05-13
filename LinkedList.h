@@ -51,7 +51,7 @@ public:
 		return last_item_;  
 	}
 
-	_NSTD _ARRAY_PLUS_COUNT<_Ty> get_array() const {
+	_NSTD vector<_Ty> get_array() const {
 		int count = 0;
 		for (_LINKED_OBJECT<_Ty>* ptr = first_item_; ptr; ptr = ptr->next_) count++;
 		_LINKED_OBJECT<_Ty>* ptr = first_item_;
@@ -60,9 +60,9 @@ public:
 			arr[i] = ptr->val_;
 			ptr = ptr->next_;
 		}
-		return _NSTD _ARRAY_PLUS_COUNT<_Ty>(arr, count);
+		return _NSTD vector<_Ty>(arr, count);
 	}
-	void set_to_arr(_NSTD _ARRAY_PLUS_COUNT<_Ty> arr) { 
+	void set_to_arr(_NSTD vector<_Ty> arr) { 
 		destruct();
 		_Ty* array = arr.get_arr();
 		_Ty term = array[arr.get_len() - 1];

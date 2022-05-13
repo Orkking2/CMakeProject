@@ -37,10 +37,10 @@ struct Tile {
 
 class Maze {
 private:
-	int (_ARRAY_PLUS_COUNT<Tile>::* len)() const = &_ARRAY_PLUS_COUNT<Tile>::get_len;
-	_NSTD _ARRAY_PLUS_COUNT<Tile>(_NSTD _LINKED_ARRAY<Tile>::* array)() const = &_NSTD _LINKED_ARRAY<Tile>::get_array;
+	int (vector<Tile>::* len)() const = &vector<Tile>::get_len;
+	_NSTD vector<Tile>(_NSTD _LINKED_ARRAY<Tile>::* array)() const = &_NSTD _LINKED_ARRAY<Tile>::get_array;
 
-	_NSTD _ARRAY_PLUS_COUNT<Tile> _tile_arr;
+	_NSTD vector<Tile> _tile_arr;
 public:
 	Maze(int dim_x = 0, int dim_y = 0, 
 		char wall_char = '+', char space_char = ' ', char new_line_char = '\n', 

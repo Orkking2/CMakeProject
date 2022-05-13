@@ -98,6 +98,6 @@ _NSTD _ASS_STR_MAN assert_str(const char*& msg, const char*& expr, const int& li
 
 	return out;
 }
-// "ERROR: msg | FROM: #expr | ON LINE: __LINE__ | IN FILE: __FILE__ ";
+// Structure: "ERROR: " msg " | FROM: " #expr " | ON LINE: __LINE__ | IN FILE: __FILE__ "
 #define _NSTD_ASSERT(expr, msg) static_assert(!!(expr), assert_str(msg, #expr, __LINE__, __FILE__).get())
 #endif // ifndef _NSTD_ASSERT

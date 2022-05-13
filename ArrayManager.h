@@ -6,62 +6,80 @@
 
 _NSTD_BEGIN
 template <typename _Ty>
-class _ARRAY_PLUS_COUNT {
+class vector {
 private:
-	_Ty* _arr;
-	int _len;
+	_Ty* arr_;
+	int len_;
 public:
-	_ARRAY_PLUS_COUNT(_Ty* arr, int len) : _len(len) {
-		_arr = new _Ty[len];
+	vector(_Ty* arr, int len) : len_(len) {
+		arr_ = new _Ty[len];
 		for (int i = 0; i < len; i++)
-			_arr[i] = arr[i];
+			arr_[i] = arr[i];
 	}
-	_ARRAY_PLUS_COUNT(int len) {
-		_arr = new _Ty[len];
-		_len = len;
+	vector(int len) {
+		arr_ = new _Ty[len];
+		len_ = len;
 	}
-	_ARRAY_PLUS_COUNT() : _arr(NULL), _len(0) {}
-	~_ARRAY_PLUS_COUNT() { 
+	vector() : arr_(NULL), len_(0) {}
+	~vector() { 
 		sel_destruct(); 
 	}
 	void sel_destruct()  { 
-		delete[] _arr; 
+		delete[] arr_; 
 	}
 
-	_ARRAY_PLUS_COUNT& operator = (const _ARRAY_PLUS_COUNT<_Ty>& arr) {
+	vector& operator = (const vector<_Ty>& arr) {
 		sel_destruct();
-		_len = arr.get_len();
-		_arr = new _Ty[_len];
-		for (int i = 0; i < _len; i++) _arr[i] = arr[i];
+		len_ = arr.get_len();
+		arr_ = new _Ty[len_];
+		for (int i = 0; i < len_; i++) arr_[i] = arr[i];
 		return *this;
+	}
+
+	vector& emplace_back(_Ty& val) {
+		_Ty* cashe = arr_;
+		arr_ = new _Ty[len_ + 1];
+		_NSTD_FOR(len_)
+			arr_[i] = cashe[i];
+		delete[] cashe;
+		arr_[++len_] = val;
+	}
+
+	vector& push_back(_Ty val) {
+		emplace_back(val);
+	}
+
+	vector& emplace_front(_Ty& val) {
+		_Ty* cashe = arr_;
+		arr_ = new _Ty
 	}
 	
 	_NODISCARD _Ty*& get_arr() const { 
-		return _arr; 
+		return arr_; 
 	}
 		
 	_NODISCARD int get_len() const { 
-		return _len; 
+		return len_; 
 	}
 
 	void set_to_arr(_Ty* arr, int count) {
 		sel_destruct();
-		_len = count;
-		_arr = new _Ty[count];
-		for (int i = 0; i < count; i++) _arr[i] = arr[i];
+		len_ = count;
+		arr_ = new _Ty[count];
+		for (int i = 0; i < count; i++) arr_[i] = arr[i];
 	}
 
 	_NODISCARD _Ty& operator [] (const int& i) {
-		_NSTD_ASSERT(i < _len, "Attempted to access item outside arr size");
-		return _arr[i];
+		_NSTD_ASSERT(i < len_, "Attempted to access item outside arr size");
+		return arr_[i];
 	}
 
-	_ARRAY_PLUS_COUNT& operator + (const _ARRAY_PLUS_COUNT<_Ty>& apc) {
+	vector& operator + (const vector<_Ty>& apc) {
 		int apc_len = apc.get_len();
-		_Ty* n_arr = npa(_len += apc_len);
-		for (int i = 0; i < apc_len; i++) n_arr[_len + i] = apc[i];
-		delete[] _arr;
-		_arr = n_arr;
+		_Ty* n_arr = npa(len_ += apc_len);
+		for (int i = 0; i < apc_len; i++) n_arr[len_ + i] = apc[i];
+		delete[] arr_;
+		arr_ = n_arr;
 		return *this;
 	}
 
@@ -75,14 +93,14 @@ private:
 #ifdef _IOSTREAM_
 public:
 	template <typename _Ty>
-	friend std::ostream& operator << (std::ostream& os, const _ARRAY_PLUS_COUNT<_Ty>& arr);
+	friend std::ostream& operator << (std::ostream& os, const vector<_Ty>& arr);
 #endif // ifdef _IOSTREAM_
 };
 
 #ifdef _IOSTREAM_
 template <typename _Ty>
-std::ostream& operator << (std::ostream& os, const _ARRAY_PLUS_COUNT<_Ty>& arr) {
-	for (int i = 0; i < arr._len; i++) os << arr._arr[i] << ", ";
+std::ostream& operator << (std::ostream& os, const vector<_Ty>& arr) {
+	for (int i = 0; i < arr.len_; i++) os << arr.arr_[i] << ", ";
 	return os;
 }
 #endif // ifdef _IOSTREAM_
