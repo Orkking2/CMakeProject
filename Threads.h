@@ -2,7 +2,7 @@
 
 #include "Defines.h"
 #include "assert.h"
-#include <unordered_map>
+#include <deque>
 #include <functional>
 #include <vector>
 #include <thread>
@@ -32,6 +32,24 @@ struct func_wrapper {
 	R* ret_;
 };
 
+class thread_manager {
+	_STD vector<_STD thread> vThreads_;
+	_STD deque<_STD function<void(void*)>> task_queue_;
+	_STD mutex queue_mutex_;
+	_STD condition_variable mutex_condition_;
+	void* pData_;
+public:
+	thread_manager() {
+		vThreads_.resize(std::thread::hardware_concurrency());
+		for (std::thread& t : vThreads_)
+			t = std::thread(thread_loop, pData_);
+	}
+	void thread_loop(void*) {
+
+	}
+};
+
+/*
 class thread_manager {
 	_STD vector<unsigned int> t_ids_;
 	_STD unordered_map<unsigned int, _STD thread*> map_;
@@ -107,6 +125,7 @@ private:
 				return it;
 	}
 };
+*/
 
 _NSTD_END
 #endif // !_NSTD_THREADS_
