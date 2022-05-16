@@ -2,6 +2,7 @@
 
 #include "Defines.h"
 #include <functional>
+#include <vector>
 #include <thread>
 #include <mutex>
 
@@ -25,27 +26,17 @@ struct func_wrapper {
 	R* ret_;
 };
 
-struct safe_thread {
-	std::thread thread_;
-	safe_thread(std::thread&  thread) {
-		thread_ = thread;
-	}
-	safe_thread(std::thread&& thread) : thread_(thread) {}
+class thread_manager {
+public:
+	struct _Tid {
+		std::thread* pThread;
+		unsigned int id;
+	};
+private:
+	_STD vector<_Tid> threads;
+public:
+	thread_manager() {
 
-	_NODISCARD static safe_thread make_thread_safe(std::thread&& thread) {
-		return safe_thread(thread);
-	}
-
-	_NODISCARD static safe_thread make_thread_safe(std::thread& thread) {
-		return safe_thread(thread);
-	}
-
-	_NODISCARD static safe_thread make_thread_safe(std::thread* pThread) {
-		return safe_thread(*pThread);
-	}
-
-	~safe_thread() {
-		thread_.join();
 	}
 };
 
