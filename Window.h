@@ -2,6 +2,7 @@
 
 #include "Defines.h"
 #include <windows.h>
+#include <WindowsX.h>
 
 #ifndef _NSTD_WINDOW_
 #define _NSTD_WINDOW_

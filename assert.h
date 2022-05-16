@@ -55,7 +55,7 @@ void copy_to_out(_NSTD _ASS_STR_MAN s_arr, const char*& arr, const int& len, int
 }
 _NSTD_END
 
-_NSTD _ASS_STR_MAN assert_str(const char*& msg, const char*& expr, const int& line, const char*& file) {
+_NSTD _ASS_STR_MAN assert_str(char*&& msg, char*&& expr, int&& line, char*&& file) {
 	// NStandard Assert (NSTDA) string components
 	static const char
 		* err = "ERROR: ", 

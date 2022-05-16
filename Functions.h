@@ -25,9 +25,9 @@ public:
 	static bool set_params(char* lParam_str) {
 		if(rParam_.is_set())
 			_NSTD_FOR(params_.get_len())
-				if (lParam_ == params_[i].param)
+				if ((lParam_ == params_[i].get().param) || (rParam.get() == params_[i].get().param))
 					return false;
-		params_.emplace_back(_spParam(lParam, lParam_str));
+		params_.push_back(_NSTD optional<_spParam> (_spParam(lParam_, lParam_str)));
 	}
 
 	PARAM lParam_;
