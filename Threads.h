@@ -113,7 +113,7 @@ public:
 		mutex_condition_.notify_all();
 	}
 	template<class R, class... Args>
-	_NODISCARD void add_task(const _STD function<R(Args...)>& func, const _STD tuple<R*, Args...>& data, _STD mutex& mut) {
+	_NODISCARD void add_task(const _STD function<R(Args...)>& func, _STD tuple<R*, Args...>& data, _STD mutex& mut) {
 		{
 			_STD lock_guard<_STD mutex> lock(queue_mutex_);
 			task_queue_.push_back(_pair(make_thread_safe_TUPLE(func, mut), reinterpret_cast<void*> (&data)));
@@ -138,7 +138,7 @@ public:
 			[&func, &mutex](void* p) {
 				_STD lock_guard<_STD mutex> guard(mutex);
 				_STD tuple<R*, Args...>* t = reinterpret_cast<_STD tuple<R*, Args...>*>(p);
-				*_STD get<0>(*t) = func(_STD get<Args...>(*t));
+				*_STD get<R*>(*t) = func(_STD get<Args...>(*t));
 			}
 		);
 	}
