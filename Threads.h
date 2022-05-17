@@ -45,7 +45,12 @@ public:
 			t = std::thread(thread_loop, pData_);
 	}
 	void thread_loop(void*) {
-
+		while (true) {
+			_STD function<void(void*)> job;
+			{
+				_STD unique_lock<_STD mutex> lock()
+			}
+		}
 	}
 };
 
