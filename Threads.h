@@ -123,11 +123,6 @@ public:
 			}
 		);
 	}
-
-	template <class R, class... Args>
-	_NODISCARD _STD function<void(void*)> make_thread_safe(const _STD function<R(Args...)>& func, _STD mutex& mutex) {
-		_STD tuple<R, Args...> t;
-	}
 };
 
 _NSTD_END
