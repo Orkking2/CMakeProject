@@ -130,7 +130,8 @@ public:
 		return _STD function<void(void*)>(
 			[&func, &mutex](void* p) {
 				_STD lock_guard<_STD mutex> guard(mutex);
-				reinterpret_cast<_STD tuple<Args...*>(p);
+				p = reinterpret_cast<_STD tuple<R*, Args...*>(p);
+				
 			}
 		);
 	}
