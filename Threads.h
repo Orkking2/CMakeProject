@@ -58,6 +58,17 @@ class thread_pool {
 	_STD mutex queue_mutex_;
 	_STD condition_variable mutex_condition_;
 	bool done_;
+/* Worse tuple:
+public:
+	template <class R, class... Args>
+	class _Data_container {
+		_Data_container(R* return_address, Args&... args) : return_address_(return_address) {
+			data_ = { reinterpret_cast<void*> (&args...) };
+		}
+		R* return_address_;
+		_STD vector<void*> data_;
+	};
+*/
 public:
 	thread_pool() : done_(false) {
 		vThreads_.resize(
@@ -65,7 +76,7 @@ public:
 			_STD thread([this] { thread_loop(); })
 		);
 	}
-	void clear() {
+	void release() {
 		{
 			_STD lock_guard<_STD mutex> lock(queue_mutex_);
 			done_ = true;
@@ -76,7 +87,7 @@ public:
 		vThreads_.clear();
 	}
 	~thread_pool() {
-		clear();
+		release();
 	}
 	void thread_loop() {
 		_pair task;
@@ -122,6 +133,21 @@ public:
 		mutex_condition_.notify_one();
 	}
 
+	
+	// Function wrappers;
+
+	template <class R, class... Args>
+	// This is the preferred make_thread_safe function.
+	_NODISCARD _STD function<void(void*)> make_thread_safe_TUPLE(const _STD function<R(Args...)>& func, _STD mutex& tuple_mutex) {
+		return _STD function<void(void*)>(
+			[&func, &tuple_mutex](void* p) {
+				_STD lock_guard<_STD mutex> tuple_guard(tuple_mutex);
+				_STD tuple<R*, Args...>* t = reinterpret_cast<_STD tuple<R*, Args...>*>(p);
+				*_STD get<R*>(*t) = func(_STD get<Args...>(*t));
+			}
+		);
+	}
+
 	template <class R, class _Ty>
 	// Alignment requirements of R must be no stricter than those of _Ty.
 	// The function passed into this method must not take its input by reference.
@@ -130,18 +156,6 @@ public:
 			[&func, &mutex](void* p) { 
 				_STD lock_guard<_STD mutex> guard(mutex); 
 				*reinterpret_cast<R*>(p) = func(*reinterpret_cast<_Ty*> (p))
-			}
-		);
-	}
-
-	template <class R, class... Args>
-	// This is the preferred make_thread_safe function.
-	_NODISCARD _STD function<void(void*)> make_thread_safe_TUPLE(const _STD function<R(Args...)>& func, _STD mutex& mutex) {
-		return _STD function<void(void*)>(
-			[&func, &mutex](void* p) {
-				_STD lock_guard<_STD mutex> guard(mutex);
-				_STD tuple<R*, Args...>* t = reinterpret_cast<_STD tuple<R*, Args...>*>(p);
-				*_STD get<R*>(*t) = func(_STD get<Args...>(*t));
 			}
 		);
 	}
