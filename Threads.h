@@ -115,11 +115,22 @@ public:
 
 	template <class R, class _Ty>
 	// Alignment requirements of R must be no stricter than those of _Ty.
-	_NODISCARD _STD function<void(void*)> make_thread_safe(const _STD function<R(_Ty*)>& func, _STD mutex& mutex) {
+	// The function passed into this method must not take its input by reference.
+	_NODISCARD _STD function<void(void*)> make_thread_safe(const _STD function<R(_Ty)>& func, _STD mutex& mutex) {
 		return _STD function<void(void*)>(
 			[&func, &mutex](void* p) { 
-				_STD lock_guard<_STD mutex> ret_guard(mutex); 
-				*reinterpret_cast<R*>(p) = func(reinterpret_cast<_Ty*> (p))
+				_STD lock_guard<_STD mutex> guard(mutex); 
+				*reinterpret_cast<R*>(p) = func(*reinterpret_cast<_Ty*> (p))
+			}
+		);
+	}
+
+	template <class R, class... Args>
+	_NODISCARD _STD function<void(void*)> make_thread_safe_SAFEOUT(const _STD function<R(Args...)>& func, _STD mutex& mutex) {
+		return _STD function<void(void*)>(
+			[&func, &mutex](void* p) {
+				_STD lock_guard<_STD mutex> guard(mutex);
+				reinterpret_cast<_STD tuple<Args...*>(p);
 			}
 		);
 	}
