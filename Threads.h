@@ -112,6 +112,13 @@ public:
 		}
 		mutex_condition_.notify_all();
 	}
+	template<class R, class... Args>
+	_NODISCARD void add_task(const _STD function<R(Args...)>& func, const _STD tuple<R*, Args...>& data, _STD mutex& mut) {
+		{
+			_STD lock_guard<_STD mutex> lock(queue_mutex_);
+			task_queue_.push_back(_pair(make_thread_safe_TUPLE(func, mut), reinterpret_cast<void*> (&data)));
+		}
+	}
 
 	template <class R, class _Ty>
 	// Alignment requirements of R must be no stricter than those of _Ty.
@@ -126,12 +133,12 @@ public:
 	}
 
 	template <class R, class... Args>
-	_NODISCARD _STD function<void(void*)> make_thread_safe_SAFEOUT(const _STD function<R(Args...)>& func, _STD mutex& mutex) {
+	_NODISCARD _STD function<void(void*)> make_thread_safe_TUPLE(const _STD function<R(Args...)>& func, _STD mutex& mutex) {
 		return _STD function<void(void*)>(
 			[&func, &mutex](void* p) {
 				_STD lock_guard<_STD mutex> guard(mutex);
-				p = reinterpret_cast<_STD tuple<R*, Args...*>(p);
-				
+				_STD tuple<R*, Args...>* t = reinterpret_cast<_STD tuple<R*, Args...>*>(p);
+				*_STD get<0>(*t) = func(_STD get<Args...>(*t));
 			}
 		);
 	}
