@@ -146,7 +146,7 @@ public:
 			}
 		);
 	}
-	_STD get<
+
 	template<class... Args>
 	_NODISCARD _STD function<void(void*)> make_thread_safe_TUPLE_NORETURN(const _STD function<void(Args...)>& func, _STD mutex& tuple_mutex) {
 		return _STD function<void(void*)>(
