@@ -3,6 +3,7 @@
 #include "Defines.h"
 #include <functional>
 #include <utility>
+#include <tuple>
 #include <vector>
 #include <thread>
 #include <deque>
@@ -57,16 +58,6 @@ class thread_pool {
 	_STD mutex queue_mutex_;
 	_STD condition_variable mutex_condition_;
 	bool done_;
-public:
-	template <class... Args>
-	struct container {
-		_STD size_t size_;
-		void** arr_;
-
-		container(const Args*&... args) : size_(sizeof...(args)), arr_(new void*[size_]) {
-			
-		}
-	};
 public:
 	thread_pool() : done_(false) {
 		vThreads_.resize(
@@ -135,7 +126,7 @@ public:
 
 	template <class R, class... Args>
 	_NODISCARD _STD function<void(void*)> make_thread_safe(const _STD function<R(Args...)>& func, _STD mutex& mutex) {
-
+		_STD tuple<R, Args...> t;
 	}
 };
 
