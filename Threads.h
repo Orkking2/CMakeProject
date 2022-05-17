@@ -32,7 +32,7 @@ struct func_wrapper {
 };
 
 class thread_pool {
-	typedef _STD pair <_STD function<void(void*)>, void*> _pair;
+	typedef _STD pair <_STD function<void(void*)>, void*> _Pair_fvp;
 	/* NOTE:
 	* The use of void* as a parameter for each function is done so for abstraction.
 	* 
@@ -54,7 +54,7 @@ class thread_pool {
 	*/
 
 	_STD vector<_STD thread> vThreads_;
-	_STD deque<_pair> task_queue_;
+	_STD deque<_Pair_fvp> task_queue_;
 	_STD mutex queue_mutex_;
 	_STD condition_variable mutex_condition_;
 	bool done_;
@@ -90,7 +90,7 @@ public:
 		release();
 	}
 	void thread_loop() {
-		_pair task;
+		_Pair_fvp task;
 		{
 			_STD unique_lock<_STD mutex> lock(queue_mutex_);
 			mutex_condition_.wait(lock, [this] { return !task_queue_.empty() || done_; });
@@ -108,29 +108,34 @@ public:
 		}
 		mutex_condition_.notify_one();
 	}
-	void add_task(const _pair& pair) {
+	void add_task(const _Pair_fvp& pair) {
 		{
 			_STD lock_guard<_STD mutex> lock(queue_mutex_);
 			task_queue_.emplace_back(pair);
 		}
 		mutex_condition_.notify_one();
 	}
-	void add_task(_STD vector<_pair> task_list) {
+	void add_task(_STD vector<_Pair_fvp> task_list) {
 		{
 			_STD lock_guard<_STD mutex> lock(queue_mutex_);
-			for (_pair task : task_list)
+			for (_Pair_fvp task : task_list)
 				task_queue_.push_back(task);
 		}
 		_NSTD_FOR(task_list.size())
 			mutex_condition_.notify_one();
 	}
 	template <class R, class... Args>
-	void add_task(const _STD function<R(Args...)>& func, _STD tuple<R*, Args...>& data, _STD mutex& mut) {
+	void add_task(const _STD function<R(Args...)>& func, _STD mutex& tup_mutex, _STD tuple<R*, Args...>& data) {
 		{
 			_STD lock_guard<_STD mutex> lock(queue_mutex_);
-			task_queue_.push_back(_STD make_pair(make_thread_safe_TUPLE(func, mut), reinterpret_cast<void*> (&data)));
+			task_queue_.push_back(_STD make_pair(make_thread_safe_TUPLE(func, tup_mutex), reinterpret_cast<void*> (&data)));
 		}
 		mutex_condition_.notify_one();
+	}
+	template <class R, class... Args>
+	void add_task(const _STD function<R(Args...)>& func, Args&&... args) {
+		_STD mutex dummy_mutex;
+		add_task(func, dummy_mutex, _STD make_tuple(args...));
 	}
 
 	
@@ -152,22 +157,11 @@ public:
 		return _STD function<void(void*)>(
 			[&func, &tuple_mutex](void* p) {
 				_STD lock_guard<_STD mutex> tuple_guard(tuple_mutex);
-				func(_STD get<Args...>(*reinterpret_cast<_STD tuple<Args...>*>(p)));
+				_STD tuple<Args...>* t = reinterpret_cast<_STD tuple<Args...>*>(p);
+				func(_STD get<Args>(*t) ...);
 			}
 		);
 	}
-
-	//template <class R, class _Ty>
-	//// Alignment requirements of R must be no stricter than those of _Ty.
-	//// The function passed into this method must not take its input by reference.
-	//_NODISCARD _STD function<void(void*)> make_thread_safe_SAME(const _STD function<R(_Ty)>& func, _STD mutex& mutex) {
-	//	return _STD function<void(void*)>(
-	//		[&func, &mutex](void* p) { 
-	//			_STD lock_guard<_STD mutex> guard(mutex); 
-	//			*reinterpret_cast<R*>(p) = func(*reinterpret_cast<_Ty*> (p))
-	//		}
-	//	);
-	//}
 };
 
 _NSTD_END
