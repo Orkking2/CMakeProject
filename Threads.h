@@ -15,10 +15,10 @@ _NSTD_BEGIN
 
 template < class R, class... Args >
 struct func_wrapper {
-	func_wrapper(_STD function <R(Args...)> func, _STD mutex* mut, R* ret = NULL) : func_(func), mut_(mut), ret_(ret) {}
+	func_wrapper(_STD function <R(Args...)> func, _STD mutex& mut, R* ret = NULL) : func_(func), mut_(mut), ret_(ret) {}
 		
 	void operator() (Args... args) {
-		_STD lock_guard<_STD mutex> guard(*mut_);
+		_STD lock_guard<_STD mutex> ret_guard(mut_);
 		if (ret_)
 			*ret_ = func_(args);
 		else
@@ -26,13 +26,32 @@ struct func_wrapper {
 	}
 
 	_STD function<R(Args...)> func_;
-	_STD mutex* mut_;
+	_STD mutex mut_;
 	R* ret_;
 };
 
 class thread_pool {
 	_STD vector<_STD thread> vThreads_;
 	_STD deque<_STD pair <_STD function<void(void*)>, void*>> task_queue_;
+	/* NOTE:
+	* The use of void* as a parameter for each function is done so for abstraction.
+	* 
+	* Each function must still take void* as a parameter, even if it is not used 
+	* within the function.
+	* 
+	* If the void* parameter is not used, it is recomended to set the associated 
+	* pair::second to NULL or nullptr and to simply ignore it within the function.
+	* 
+	* Functions passed into this thread pool should reinterpret the void*, e.g. 
+	* reinterpret_vast<T*> (void* p), before use. 
+	* 
+	* Object(s) pointed to by the void* pointer is/are NOT protected for 
+	* multithreading by default.
+	* 
+	* Functions passed into the pool should only ever read from the pointer 
+	* or use a custom system to protect its/their contents from curroption;
+	* see func_wrapper defined above.
+	*/
 	_STD mutex queue_mutex_;
 	_STD condition_variable mutex_condition_;
 	bool done_;
@@ -40,7 +59,7 @@ public:
 	thread_pool() : done_(false) {
 		vThreads_.resize(
 			_STD thread::hardware_concurrency(), 
-			_STD thread([this] { this->thread_loop(); })
+			_STD thread([this] { thread_loop(); })
 		);
 	}
 	void clear() {
@@ -89,6 +108,17 @@ public:
 				task_queue_.push_back(task);
 		}
 		mutex_condition_.notify_all();
+	}
+
+	template <class R, class _Ty>
+	// Alignment requirements of R must be no stricter than those of _Ty.
+	_NODISCARD _STD function<void(void*)> make_thread_safe(const _STD function<R(_Ty)>& func, _STD mutex& mutex) {
+		return _STD function<void(void*)>(
+			[&func, &mutex](void* p) { 
+				_STD lock_guard<_STD mutex> ret_guard(mutex); 
+				*reinterpret_cast<R*>(p) = func(reinterpret_cast<_Ty*> (p))
+			}
+		);
 	}
 };
 
