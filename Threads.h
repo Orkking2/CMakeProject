@@ -64,9 +64,7 @@ public:
 		void** arr_;
 
 		container(const Args*&... args) : size_(sizeof...(args)), arr_(new void*[size_]) {
-			reinterpret_cast<void*>(args);
-			_NSTD_FOR(size_)
-				arr_[i] = 
+			
 		}
 	};
 public:
