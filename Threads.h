@@ -110,20 +110,22 @@ public:
 			for (_pair task : task_list)
 				task_queue_.push_back(task);
 		}
-		mutex_condition_.notify_all();
+		_NSTD_FOR(task_list.size())
+			mutex_condition_.notify_one();
 	}
-	template<class R, class... Args>
-	_NODISCARD void add_task(const _STD function<R(Args...)>& func, _STD tuple<R*, Args...>& data, _STD mutex& mut) {
+	template <class R, class... Args>
+	void add_task(const _STD function<R(Args...)>& func, _STD tuple<R*, Args...>& data, _STD mutex& mut) {
 		{
 			_STD lock_guard<_STD mutex> lock(queue_mutex_);
-			task_queue_.push_back(_pair(make_thread_safe_TUPLE(func, mut), reinterpret_cast<void*> (&data)));
+			task_queue_.push_back(_STD make_pair(make_thread_safe_TUPLE(func, mut), reinterpret_cast<void*> (&data)));
 		}
+		mutex_condition_.notify_one();
 	}
 
 	template <class R, class _Ty>
 	// Alignment requirements of R must be no stricter than those of _Ty.
 	// The function passed into this method must not take its input by reference.
-	_NODISCARD _STD function<void(void*)> make_thread_safe(const _STD function<R(_Ty)>& func, _STD mutex& mutex) {
+	_NODISCARD _STD function<void(void*)> make_thread_safe_SAME(const _STD function<R(_Ty)>& func, _STD mutex& mutex) {
 		return _STD function<void(void*)>(
 			[&func, &mutex](void* p) { 
 				_STD lock_guard<_STD mutex> guard(mutex); 
@@ -133,6 +135,7 @@ public:
 	}
 
 	template <class R, class... Args>
+	// This is the preferred make_thread_safe function.
 	_NODISCARD _STD function<void(void*)> make_thread_safe_TUPLE(const _STD function<R(Args...)>& func, _STD mutex& mutex) {
 		return _STD function<void(void*)>(
 			[&func, &mutex](void* p) {
