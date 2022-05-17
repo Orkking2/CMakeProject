@@ -1,26 +1,24 @@
 #pragma once
 
 #include "Defines.h"
-#include "assert.h"
-#include <deque>
 #include <functional>
+#include <utility>
 #include <vector>
 #include <thread>
+#include <deque>
 #include <mutex>
 
 #ifndef _NSTD_THREADS_
 #define _NSTD_THREADS_
 
-#define _NSTD_TERMINATOR_THREAD_ID_ 0U
-
 _NSTD_BEGIN
 
 template < class R, class... Args >
 struct func_wrapper {
-	func_wrapper(_STD function <R(Args...)> func, _STD mutex* mut, R* ret = NULL) : func_(func), mut_(mut), ret_(ret) {}
+	func_wrapper(_STD function <R(Args...)> func, _STD mutex& mut, R* ret = NULL) : func_(func), mut_(mut), ret_(ret) {}
 		
 	void operator() (Args... args) {
-		_STD lock_guard<_STD mutex> guard(*mut_);
+		_STD lock_guard<_STD mutex> ret_guard(mut_);
 		if (ret_)
 			*ret_ = func_(args);
 		else
@@ -28,109 +26,118 @@ struct func_wrapper {
 	}
 
 	_STD function<R(Args...)> func_;
-	_STD mutex* mut_;
+	_STD mutex mut_;
 	R* ret_;
 };
 
-class thread_manager {
+class thread_pool {
+	typedef _STD pair <_STD function<void(void*)>, void*> _pair;
+	/* NOTE:
+	* The use of void* as a parameter for each function is done so for abstraction.
+	* 
+	* Each function must still take void* as a parameter, even if it is not used 
+	* within the function.
+	* 
+	* If the void* parameter is not used, it is recomended to set the associated 
+	* pair::second to NULL or nullptr and to simply ignore it within the function.
+	* 
+	* Functions passed into this thread pool should reinterpret the void*, e.g. 
+	* reinterpret_vast<T*> (void* p), before use. 
+	* 
+	* Object(s) pointed to by the void* pointer is/are NOT protected for 
+	* multithreading by default.
+	* 
+	* Functions passed into the pool should only ever read from the pointer 
+	* or use a custom system to protect its/their contents from curroption;
+	* see make_thread_safe function below.
+	*/
+
 	_STD vector<_STD thread> vThreads_;
-	_STD deque<_STD function<void(void*)>> task_queue_;
+	_STD deque<_pair> task_queue_;
 	_STD mutex queue_mutex_;
 	_STD condition_variable mutex_condition_;
-	void* pData_;
+	bool done_;
 public:
-	thread_manager() {
-		vThreads_.resize(std::thread::hardware_concurrency());
-		for (std::thread& t : vThreads_)
-			t = std::thread(thread_loop, pData_);
-	}
-	void thread_loop(void*) {
-		while (true) {
-			_STD function<void(void*)> job;
-			{
-				_STD unique_lock<_STD mutex> lock()
-			}
+	template <class... Args>
+	struct container {
+		_STD size_t size_;
+		void** arr_;
+
+		container(const Args*&... args) : size_(sizeof...(args)), arr_(new void*[size_]) {
+			
 		}
+	};
+public:
+	thread_pool() : done_(false) {
+		vThreads_.resize(
+			_STD thread::hardware_concurrency(), 
+			_STD thread([this] { thread_loop(); })
+		);
+	}
+	void clear() {
+		{
+			_STD lock_guard<_STD mutex> lock(queue_mutex_);
+			done_ = true;
+		}
+		mutex_condition_.notify_all();
+		for (_STD thread& thread : vThreads_)
+			thread.join();
+		vThreads_.clear();
+	}
+	~thread_pool() {
+		clear();
+	}
+	void thread_loop() {
+		_pair task;
+		{
+			_STD unique_lock<_STD mutex> lock(queue_mutex_);
+			mutex_condition_.wait(lock, [this] { return !task_queue_.empty() || done_; });
+			if (done_ && task_queue_.empty()) 
+				return;
+			task = task_queue_.front();
+			task_queue_.pop_front();
+		}
+		task.first(task.second);
+	}
+	void add_task(const _STD function<void(void*)>& func, void* data = NULL) {
+		{
+			_STD lock_guard<_STD mutex> lock(queue_mutex_);
+			task_queue_.emplace_back(_pair(func, data));
+		}
+		mutex_condition_.notify_one();
+	}
+	void add_task(const _pair& pair) {
+		{
+			_STD lock_guard<_STD mutex> lock(queue_mutex_);
+			task_queue_.emplace_back(pair);
+		}
+		mutex_condition_.notify_one();
+	}
+	void add_task(_STD vector<_pair> task_list) {
+		{
+			_STD lock_guard<_STD mutex> lock(queue_mutex_);
+			for (_pair task : task_list)
+				task_queue_.push_back(task);
+		}
+		mutex_condition_.notify_all();
+	}
+
+	template <class R, class _Ty>
+	// Alignment requirements of R must be no stricter than those of _Ty.
+	_NODISCARD _STD function<void(void*)> make_thread_safe(const _STD function<R(_Ty*)>& func, _STD mutex& mutex) {
+		return _STD function<void(void*)>(
+			[&func, &mutex](void* p) { 
+				_STD lock_guard<_STD mutex> ret_guard(mutex); 
+				*reinterpret_cast<R*>(p) = func(reinterpret_cast<_Ty*> (p))
+			}
+		);
+	}
+
+	template <class R, class... Args>
+	_NODISCARD _STD function<void(void*)> make_thread_safe(const _STD function<R(Args...)>& func, _STD mutex& mutex) {
+
 	}
 };
-
-/*
-class thread_manager {
-	_STD vector<unsigned int> t_ids_;
-	_STD unordered_map<unsigned int, _STD thread*> map_;
-	_STD mutex mutex_;
-public:
-	inline void terminate_thread(_STD thread* pThread) {
-		(*pThread).join();
-	}
-	inline void terminate_threads(_STD vector<_STD thread*> vThreads) {
-		for (_STD thread* pThread : vThreads)
-			terminate_thread(pThread);
-	}
-public:
-	thread_manager() {
-
-	}
-
-	bool is_id(unsigned int id) {
-		for (unsigned int ids : t_ids_)
-			if (ids == id)
-				return true;
-		return false;
-	}
-	_NODISCARD bool add_thread(unsigned int id, _STD thread* pThread) {
-		is_id(id) ? return false; : ;
-		t_ids_.push_back(id);
-		map_[id] = pThread;
-		return true;
-	}
-	_NODISCARD unsigned int add_thread(_STD thread* pThread) {
-
-	}
-	unsigned int gen_id() {
-		for (unsigned int cashe = 1U; true; cashe++)
-			if (!is_id(cashe))
-				return cashe;
-		return 0U;
-	}
-	bool join(unsigned int id) {
-		is_id(id) ? ; : return false;
-		(*map_[id]).join();
-		t_ids_.erase(find_id(id));
-		return true;
-	}
-	bool join(_STD vector<unsigned int> ids) {
-		bool flag = true;
-		for (unsigned int id : ids)
-			if (!join(id))
-				flag = false;
-		return flag;
-	}
-	bool no_block_join(_STD vector<unsigned int> ids) {
-		(*map_[_NSTD_TERMINATOR_THREAD_ID_]).join();
-		bool flag = true;
-		_STD vector<_STD thread*> vThreads = {};
-		for (unsigned int id : ids)
-			if (is_id(id))
-				vThreads.emplace_back(map_[id]);
-			else
-				flag = false;
-		std::thread thread(terminate_threads(vThreads));
-		map_[_NSTD_TERMINATOR_THREAD_ID_] = &thread;
-		return flag;
-	}
-	~thread_manager() {
-		for (unsigned int ids : t_ids_)
-			(*map_[ids]).join();
-	}
-private:
-	_STD vector<unsigned int>::iterator find_id(unsigned int id) {
-		for (_STD vector<unsigned int>::iterator it = t_ids_.begin(); ; it++)
-			if (t_ids_[it] == id)
-				return it;
-	}
-};
-*/
 
 _NSTD_END
 #endif // !_NSTD_THREADS_
