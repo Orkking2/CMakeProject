@@ -137,28 +137,37 @@ public:
 	// Function wrappers;
 
 	template <class R, class... Args>
-	// This is the preferred make_thread_safe function.
 	_NODISCARD _STD function<void(void*)> make_thread_safe_TUPLE(const _STD function<R(Args...)>& func, _STD mutex& tuple_mutex) {
 		return _STD function<void(void*)>(
 			[&func, &tuple_mutex](void* p) {
 				_STD lock_guard<_STD mutex> tuple_guard(tuple_mutex);
 				_STD tuple<R*, Args...>* t = reinterpret_cast<_STD tuple<R*, Args...>*>(p);
-				*_STD get<R*>(*t) = func(_STD get<Args...>(*t));
+				*_STD get<R*>(*t) = func(_STD get<Args>(*t) ...);
+			}
+		);
+	}
+	_STD get<
+	template<class... Args>
+	_NODISCARD _STD function<void(void*)> make_thread_safe_TUPLE_NORETURN(const _STD function<void(Args...)>& func, _STD mutex& tuple_mutex) {
+		return _STD function<void(void*)>(
+			[&func, &tuple_mutex](void* p) {
+				_STD lock_guard<_STD mutex> tuple_guard(tuple_mutex);
+				func(_STD get<Args...>(*reinterpret_cast<_STD tuple<Args...>*>(p)));
 			}
 		);
 	}
 
-	template <class R, class _Ty>
-	// Alignment requirements of R must be no stricter than those of _Ty.
-	// The function passed into this method must not take its input by reference.
-	_NODISCARD _STD function<void(void*)> make_thread_safe_SAME(const _STD function<R(_Ty)>& func, _STD mutex& mutex) {
-		return _STD function<void(void*)>(
-			[&func, &mutex](void* p) { 
-				_STD lock_guard<_STD mutex> guard(mutex); 
-				*reinterpret_cast<R*>(p) = func(*reinterpret_cast<_Ty*> (p))
-			}
-		);
-	}
+	//template <class R, class _Ty>
+	//// Alignment requirements of R must be no stricter than those of _Ty.
+	//// The function passed into this method must not take its input by reference.
+	//_NODISCARD _STD function<void(void*)> make_thread_safe_SAME(const _STD function<R(_Ty)>& func, _STD mutex& mutex) {
+	//	return _STD function<void(void*)>(
+	//		[&func, &mutex](void* p) { 
+	//			_STD lock_guard<_STD mutex> guard(mutex); 
+	//			*reinterpret_cast<R*>(p) = func(*reinterpret_cast<_Ty*> (p))
+	//		}
+	//	);
+	//}
 };
 
 _NSTD_END
