@@ -90,16 +90,18 @@ public:
 		release();
 	}
 	void thread_loop() {
-		_Pair_fvp task;
-		{
-			_STD unique_lock<_STD mutex> lock(queue_mutex_);
-			mutex_condition_.wait(lock, [this] { return !task_queue_.empty() || done_; });
-			if (done_ && task_queue_.empty()) 
-				return;
-			task = task_queue_.front();
-			task_queue_.pop_front();
+		while (true) {
+			_Pair_fvp task;
+			{
+				_STD unique_lock<_STD mutex> lock(queue_mutex_);
+				mutex_condition_.wait(lock, [this] { return !task_queue_.empty() || done_; });
+				if (done_ && task_queue_.empty())
+					return;
+				task = task_queue_.front();
+				task_queue_.pop_front();
+			}
+			task.first(task.second);
 		}
-		task.first(task.second);
 	}
 	void add_task(const _STD function<void(void*)>& func, void* data = NULL) {
 		{
