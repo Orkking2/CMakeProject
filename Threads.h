@@ -104,7 +104,7 @@ public:
 	void add_task(const _STD function<void(void*)>& func, void* data = NULL) {
 		{
 			_STD lock_guard<_STD mutex> lock(queue_mutex_);
-			task_queue_.emplace_back(_pair(func, data));
+			task_queue_.emplace_back(_Pair_fvp(func, data));
 		}
 		mutex_condition_.notify_one();
 	}
