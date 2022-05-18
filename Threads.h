@@ -14,22 +14,22 @@
 
 _NSTD_BEGIN
 
-template < class R, class... Args >
-struct func_wrapper {
-	func_wrapper(_STD function <R(Args...)> func, _STD mutex& mut, R* ret = NULL) : func_(func), mut_(mut), ret_(ret) {}
-		
-	void operator() (Args... args) {
-		_STD lock_guard<_STD mutex> ret_guard(mut_);
-		if (ret_)
-			*ret_ = func_(args);
-		else
-			func_(args);
-	}
-
-	_STD function<R(Args...)> func_;
-	_STD mutex mut_;
-	R* ret_;
-};
+//template < class R, class... Args >
+//struct func_wrapper {
+//	func_wrapper(_STD function <R(Args...)> func, _STD mutex& mut, R* ret = NULL) : func_(func), mut_(mut), ret_(ret) {}
+//		
+//	void operator() (Args... args) {
+//		_STD lock_guard<_STD mutex> ret_guard(mut_);
+//		if (ret_)
+//			*ret_ = func_(args);
+//		else
+//			func_(args);
+//	}
+//
+//	_STD function<R(Args...)> func_;
+//	_STD mutex mut_;
+//	R* ret_;
+//};
 
 class thread_pool {
 	typedef _STD pair <_STD function<void(void*)>, void*> _Pair_fvp;
@@ -58,17 +58,6 @@ class thread_pool {
 	_STD mutex queue_mutex_;
 	_STD condition_variable mutex_condition_;
 	bool done_;
-/* Worse tuple:
-public:
-	template <class R, class... Args>
-	class _Data_container {
-		_Data_container(R* return_address, Args&... args) : return_address_(return_address) {
-			data_ = { reinterpret_cast<void*> (&args...) };
-		}
-		R* return_address_;
-		_STD vector<void*> data_;
-	};
-*/
 public:
 	thread_pool(unsigned int count = _STD thread::hardware_concurrency()) : done_(false) {
 		unsigned int hc = _STD thread::hardware_concurrency();
@@ -96,16 +85,18 @@ public:
 		return vThreads_.size();
 	}
 	void thread_loop() {
-		_Pair_fvp task;
-		{
-			_STD unique_lock<_STD mutex> lock(queue_mutex_);
-			mutex_condition_.wait(lock, [this] { return !task_queue_.empty() || done_; });
-			if (done_ && task_queue_.empty()) 
-				return;
-			task = task_queue_.front();
-			task_queue_.pop_front();
+		while (true) {
+			_Pair_fvp task;
+			{
+				_STD unique_lock<_STD mutex> lock(queue_mutex_);
+				mutex_condition_.wait(lock, [this] { return !task_queue_.empty() || done_; });
+				if (done_ && task_queue_.empty())
+					return;
+				task = task_queue_.front();
+				task_queue_.pop_front();
+			}
+			task.first(task.second);
 		}
-		task.first(task.second);
 	}
 	void add_task(const _STD function<void(void*)>& func, void* data = NULL) {
 		{
@@ -163,8 +154,7 @@ public:
 		return _STD function<void(void*)>(
 			[&func, &tuple_mutex](void* p) {
 				_STD lock_guard<_STD mutex> tuple_guard(tuple_mutex);
-				_STD tuple<Args...>* t = reinterpret_cast<_STD tuple<Args...>*>(p);
-				func(_STD get<Args>(*t) ...);
+				func(_STD get<Args>(*reinterpret_cast<_STD tuple<Args...>*>(p)) ...);
 			}
 		);
 	}
