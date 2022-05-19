@@ -59,9 +59,12 @@ class thread_pool {
 	_STD condition_variable mutex_condition_;
 	bool done_;
 public:
-	thread_pool() : done_(false) {
+	thread_pool(unsigned int count = _STD thread::hardware_concurrency()) : done_(false) {
+		unsigned int hc = _STD thread::hardware_concurrency();
+		if (count > hc)
+			count = hc;
 		vThreads_.resize(
-			_STD thread::hardware_concurrency(), 
+			count, 
 			_STD thread([this] { thread_loop(); })
 		);
 	}
@@ -77,6 +80,9 @@ public:
 	}
 	~thread_pool() {
 		release();
+	}
+	_NODISCARD unsigned int num_threads() {
+		return vThreads_.size();
 	}
 	void thread_loop() {
 		while (true) {
@@ -109,7 +115,7 @@ public:
 	void add_task(_STD vector<_Pair_fvp> task_list) {
 		{
 			_STD lock_guard<_STD mutex> lock(queue_mutex_);
-			for (_Pair_fvp task : task_list)
+			for (_Pair_fvp& task : task_list)
 				task_queue_.push_back(task);
 		}
 		_NSTD_FOR(task_list.size())
@@ -124,9 +130,9 @@ public:
 		mutex_condition_.notify_one();
 	}
 	template <class R, class... Args>
-	void add_task(const _STD function<R(Args...)>& func, Args&&... args) {
+	void add_task(const _STD function<R(Args...)>& func, R* ret, Args&&... args) {
 		_STD mutex dummy_mutex;
-		add_task(func, dummy_mutex, _STD make_tuple(args...));
+		add_task(func, dummy_mutex, _STD make_tuple(ret, args...));
 	}
 
 	
@@ -143,7 +149,7 @@ public:
 		);
 	}
 
-	template<class... Args>
+	template <class... Args>
 	_NODISCARD _STD function<void(void*)> make_thread_safe_TUPLE_NORETURN(const _STD function<void(Args...)>& func, _STD mutex& tuple_mutex) {
 		return _STD function<void(void*)>(
 			[&func, &tuple_mutex](void* p) {
